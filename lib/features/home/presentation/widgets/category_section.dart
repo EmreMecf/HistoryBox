@@ -22,7 +22,7 @@ class CategorySection extends StatelessWidget {
     ];
 
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(AppDimensions.paddingL),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -42,7 +42,7 @@ class CategorySection extends StatelessWidget {
               crossAxisCount: 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 1.5,
+              childAspectRatio: 2.2,
             ),
             itemCount: categories.length,
             itemBuilder: (context, index) {

@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/core.dart';
 import '../../../../shared/widgets/animated_button.dart';
+import '../../../../core/translations/l10n/app_localizations.dart';
 import '../../../../shared/widgets/story_card.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/widgets/loading_widget.dart';
+import '../../../../core/widgets/premium_header_card.dart';
 import '../../../../shared/services/story_service.dart';
 import '../../../../services/injector.dart';
 import '../../../../viewmodel/thema_view_model.dart';
@@ -21,28 +23,45 @@ class ProfileScreen extends StatelessWidget {
     final themeViewModel = context.watch<ThemeViewModel>();
     final storyService = injector<StoryService>();
     final user = authViewModel.currentUser;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // App Bar with Profile Header
-          SliverAppBar(
-            expandedHeight: 250,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: AppColors.sweetGradient,
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.premiumBackgroundGradient,
+          ),
+        ),
+        child: CustomScrollView(
+          slivers: [
+            // App Bar with Profile Header
+            SliverAppBar(
+              expandedHeight: 240,
+              pinned: true,
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              foregroundColor: Colors.white,
+              title: Text(
+                l10n.profile_screen_app_bar_label,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: AppColors.premiumAppBarGradient,
+                    ),
                   ),
-                ),
-                child: SafeArea(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 40),
+                  child: SafeArea(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 56),
                       // Avatar
                       Container(
                         width: 100,
@@ -50,14 +69,14 @@ class ProfileScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: Colors.white,
-                            width: 4,
+                            color: Colors.white.withOpacity(0.7),
+                            width: 2,
                           ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6),
                             ),
                           ],
                         ),
@@ -69,10 +88,10 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                               )
                             : CircleAvatar(
-                                backgroundColor: Colors.white,
+                                backgroundColor: Colors.white.withOpacity(0.2),
                                 child: Text(
                                   AppAssets.crownEmoji,
-                                  style: const TextStyle(fontSize: 50),
+                                  style: const TextStyle(fontSize: 40),
                                 ),
                               ),
                       ),
@@ -82,24 +101,24 @@ class ProfileScreen extends StatelessWidget {
                         user?.displayName ?? 'Misafir',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       if (user?.email != null)
                         Text(
                           user!.email!,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 14,
+                            color: Colors.white.withOpacity(0.85),
+                            fontSize: 13,
                           ),
                         ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
 
           // Content
           SliverToBoxAdapter(
@@ -108,6 +127,12 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  PremiumHeaderCard(
+                    icon: Icons.auto_awesome,
+                    title: 'Profilin Hazır',
+                    subtitle: 'Hikayelerini yönet ve ayarlarını kişiselleştir',
+                  ),
+                  const SizedBox(height: AppDimensions.paddingL),
                   // Settings Section
                   _buildSectionTitle('Ayarlar', AppAssets.magicEmoji),
                   const SizedBox(height: AppDimensions.paddingM),
@@ -166,7 +191,7 @@ class ProfileScreen extends StatelessWidget {
                         message: 'İlk hikayeni oluştur!',
                         buttonText: 'Hikaye Oluştur',
                         onButtonPressed: () {
-                          context.go('/story/create');
+                          context.go('/story-create');
                         },
                       ),
                     ),
@@ -223,7 +248,8 @@ class ProfileScreen extends StatelessWidget {
           const SliverToBoxAdapter(
             child: SizedBox(height: AppDimensions.paddingXL),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -239,8 +265,8 @@ class ProfileScreen extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ],
@@ -257,13 +283,14 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppDimensions.paddingM),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+        border: Border.all(color: AppColors.borderLight),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -272,7 +299,7 @@ class ProfileScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppDimensions.paddingM),
             decoration: BoxDecoration(
-              color: AppColors.primaryRed.withOpacity(0.1),
+              color: AppColors.primaryRed.withOpacity(0.12),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: AppColors.primaryRed),

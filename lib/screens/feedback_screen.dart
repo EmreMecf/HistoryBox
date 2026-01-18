@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../core/translations/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../core/thema/app_colors.dart';
+import '../core/widgets/premium_app_bar.dart';
+import '../core/widgets/premium_header_card.dart';
 
 class FeedbackScreen extends StatelessWidget {
   const FeedbackScreen({super.key});
@@ -11,33 +14,31 @@ class FeedbackScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        title: Text(l10n.feedback_screen_app_bar_label),
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+      backgroundColor: Colors.transparent,
+      appBar: PremiumAppBar(
+        title: Text(
+          l10n.feedback_screen_app_bar_label,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
       ),
-      body: Padding(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.premiumBackgroundGradient,
+          ),
+        ),
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.feedback_description_heading,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+            PremiumHeaderCard(
+              icon: Icons.feedback_outlined,
+              title: l10n.feedback_description_heading,
+              subtitle: l10n.feedback_description_title,
             ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.feedback_description_title,
-              style: TextStyle(
-                fontSize: 16,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             _buildContactButton(
               context,
               icon: Icons.email_outlined,
@@ -67,26 +68,35 @@ class FeedbackScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderLight),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primaryContainer,
+            color: theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.borderLight),
           ),
           child: Icon(
             icon,
-            color: theme.colorScheme.primary,
+            color: theme.colorScheme.onSurface.withOpacity(0.7),
           ),
         ),
         title: Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),

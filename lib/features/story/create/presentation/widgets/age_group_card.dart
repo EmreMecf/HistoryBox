@@ -46,41 +46,36 @@ class AgeGroupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(AppDimensions.paddingL),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              color,
-              color.withOpacity(0.7),
-            ],
-          ),
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+          border: Border.all(color: AppColors.borderLight),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
+                color: color.withOpacity(0.12),
                 shape: BoxShape.circle,
               ),
               child: Center(
                 child: Text(
                   _getAgeGroupEmoji(ageGroup),
-                  style: const TextStyle(fontSize: 30),
+                  style: const TextStyle(fontSize: 22),
                 ),
               ),
             ),
@@ -91,26 +86,26 @@ class AgeGroupCard extends StatelessWidget {
                 children: [
                   Text(
                     ageGroup,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     _getAgeGroupDescription(ageGroup),
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 13,
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      fontSize: 12,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios_rounded,
-              color: Colors.white,
+              color: theme.colorScheme.onSurface.withOpacity(0.4),
             ),
           ],
         ),

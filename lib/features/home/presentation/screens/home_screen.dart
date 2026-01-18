@@ -11,6 +11,7 @@ import '../viewmodels/home_view_model.dart';
 import '../widgets/animated_greeting_card.dart';
 import '../widgets/category_section.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/widgets/premium_app_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -50,15 +51,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     final homeViewModel = context.watch<HomeViewModel>();
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.backgroundLight,
-              AppColors.backgroundLight.withOpacity(0.8),
-            ],
+            colors: AppColors.premiumBackgroundGradient,
           ),
         ),
         child: CustomScrollView(
@@ -122,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             offset: Offset(0, -10 * _floatingController.value),
             child: FloatingActionButton.extended(
               onPressed: () {
-                context.go('/story/create');
+                context.go('/story-create');
               },
               icon: Text(
                 AppAssets.magicEmoji,
@@ -149,53 +148,19 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       expandedHeight: 120,
       floating: false,
       pinned: true,
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: AppColors.sweetGradient,
-            ),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimensions.paddingL,
-                vertical: AppDimensions.paddingM,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Logo ve İsim
-                  Row(
-                    children: [
-                      Text(
-                        AppAssets.bookEmoji,
-                        style: const TextStyle(fontSize: 32),
-                      ),
-                      const SizedBox(width: AppDimensions.paddingS),
-                      const Text(
-                        AppConstants.appName,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      foregroundColor: Colors.white,
+      title: const Text(
+        AppConstants.appName,
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
       ),
+      flexibleSpace: const PremiumAppBarBackground(),
       actions: [
         // Profil
         IconButton(
           icon: CircleAvatar(
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.white.withOpacity(0.2),
             child: authViewModel.currentUser?.photoURL != null
                 ? ClipOval(
                     child: Image.network(
@@ -207,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   )
                 : Text(
                     AppAssets.crownEmoji,
-                    style: const TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 18),
                   ),
           ),
           onPressed: () {
@@ -246,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         message: 'İlk hikayeni oluştur ve macerana başla!',
         buttonText: 'Hikaye Oluştur',
         onButtonPressed: () {
-          context.go('/story/create');
+          context.go('/story-create');
         },
       );
     }

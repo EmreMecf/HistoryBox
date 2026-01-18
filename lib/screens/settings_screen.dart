@@ -5,6 +5,9 @@ import 'package:historybox/viewmodel/thema_view_model.dart';
 import 'package:historybox/viewmodel/language_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../core/thema/app_colors.dart';
+import '../core/widgets/premium_app_bar.dart';
+import '../core/widgets/premium_header_card.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -17,15 +20,29 @@ class SettingsScreen extends StatelessWidget {
     final languageViewModel = context.watch<LanguageViewModel>();
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        title: Text(l10n.setting_screen_app_bar_label),
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+      backgroundColor: Colors.transparent,
+      appBar: PremiumAppBar(
+        title: Text(
+          l10n.setting_screen_app_bar_label,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.premiumBackgroundGradient,
+          ),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            PremiumHeaderCard(
+              icon: Icons.tune_rounded,
+              title: l10n.setting_screen_app_bar_label,
+              subtitle: 'Görünüm ve dil ayarlarını düzenle',
+            ),
           _buildSection(
             context,
             title: 'Appearance',
@@ -114,7 +131,8 @@ class SettingsScreen extends StatelessWidget {
               ),
             ],
           ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -135,14 +153,22 @@ class SettingsScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
+              color: theme.colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
         ),
-        Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
+        Container(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.borderLight),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Column(
             children: children,

@@ -70,7 +70,10 @@ class _LoginScreenState extends State<LoginScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: AppColors.sweetGradient,
+            colors: [
+              AppColors.backgroundLight,
+              AppColors.surfaceLight,
+            ],
           ),
         ),
         child: SafeArea(
@@ -107,16 +110,16 @@ class _LoginScreenState extends State<LoginScreen>
       children: [
         // Logo container
         Container(
-          width: 160,
-          height: 160,
+          width: 120,
+          height: 120,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surfaceLight,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
               ),
             ],
           ),
@@ -124,22 +127,20 @@ class _LoginScreenState extends State<LoginScreen>
             alignment: Alignment.center,
             children: [
               // Arka plan deseni
-              ...List.generate(3, (index) {
-                return Positioned(
-                  top: 20 + (index * 15.0),
-                  child: Opacity(
-                    opacity: 0.1,
-                    child: Text(
-                      AppAssets.bookEmoji,
-                      style: TextStyle(fontSize: 40 - (index * 8.0)),
-                    ),
+              Positioned(
+                top: 24,
+                child: Opacity(
+                  opacity: 0.08,
+                  child: Text(
+                    AppAssets.bookEmoji,
+                    style: const TextStyle(fontSize: 44),
                   ),
-                );
-              }),
+                ),
+              ),
               // Ana ikon
               Text(
                 AppAssets.bookEmoji,
-                style: const TextStyle(fontSize: 80),
+                style: const TextStyle(fontSize: 64),
               ),
             ],
           ),
@@ -147,24 +148,12 @@ class _LoginScreenState extends State<LoginScreen>
         const SizedBox(height: AppDimensions.paddingXL),
         
         // App Name
-        ShaderMask(
-          shaderCallback: (bounds) => LinearGradient(
-            colors: [Colors.white, Colors.white.withOpacity(0.9)],
-          ).createShader(bounds),
-          child: const Text(
-            AppConstants.appName,
-            style: TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              shadows: [
-                Shadow(
-                  color: Colors.black26,
-                  offset: Offset(0, 4),
-                  blurRadius: 8,
-                ),
-              ],
-            ),
+        const Text(
+          AppConstants.appName,
+          style: TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textDarkOnLight,
           ),
         ),
         
@@ -176,28 +165,21 @@ class _LoginScreenState extends State<LoginScreen>
           children: [
             Text(
               AppAssets.magicEmoji,
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 20),
             ),
             const SizedBox(width: AppDimensions.paddingS),
             Text(
               AppConstants.appSlogan,
               style: TextStyle(
-                fontSize: 20,
-                color: Colors.white.withOpacity(0.95),
+                fontSize: 16,
+                color: AppColors.textDarkOnLight.withOpacity(0.7),
                 fontWeight: FontWeight.w500,
-                shadows: const [
-                  Shadow(
-                    color: Colors.black26,
-                    offset: Offset(0, 2),
-                    blurRadius: 4,
-                  ),
-                ],
               ),
             ),
             const SizedBox(width: AppDimensions.paddingS),
             Text(
               AppAssets.magicEmoji,
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 20),
             ),
           ],
         ),
@@ -218,8 +200,8 @@ class _LoginScreenState extends State<LoginScreen>
             text: 'Google ile Giriş Yap',
             onPressed: () => _handleGoogleSignIn(authViewModel),
             isLoading: authViewModel.isLoading,
-            backgroundColor: Colors.white,
-            textColor: Colors.black87,
+            backgroundColor: AppColors.surfaceLight,
+            textColor: AppColors.textDarkOnLight,
             width: double.infinity,
           ),
           
@@ -230,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen>
             children: [
               Expanded(
                 child: Divider(
-                  color: Colors.white.withOpacity(0.5),
+                  color: AppColors.borderLight,
                   thickness: 1,
                 ),
               ),
@@ -241,14 +223,14 @@ class _LoginScreenState extends State<LoginScreen>
                 child: Text(
                   'veya',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: AppColors.textDarkOnLight.withOpacity(0.5),
                     fontSize: 14,
                   ),
                 ),
               ),
               Expanded(
                 child: Divider(
-                  color: Colors.white.withOpacity(0.5),
+                  color: AppColors.borderLight,
                   thickness: 1,
                 ),
               ),
@@ -263,7 +245,7 @@ class _LoginScreenState extends State<LoginScreen>
                 ? null
                 : () => authViewModel.signInAsGuest(),
             style: TextButton.styleFrom(
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.textDarkOnLight,
               padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.paddingL,
                 vertical: AppDimensions.paddingM,
@@ -282,7 +264,6 @@ class _LoginScreenState extends State<LoginScreen>
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.underline,
                   ),
                 ),
               ],

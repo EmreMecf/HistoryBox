@@ -86,10 +86,9 @@ class _AnimatedButtonState extends State<AnimatedButton>
                 borderRadius: BorderRadius.circular(AppDimensions.radiusL),
                 boxShadow: [
                   BoxShadow(
-                    color: (widget.backgroundColor ?? Theme.of(context).primaryColor)
-                        .withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
@@ -112,7 +111,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
                           Icon(
                             widget.icon,
                             color: widget.textColor ?? Colors.white,
-                            size: 24,
+                            size: 20,
                           ),
                           const SizedBox(width: AppDimensions.paddingS),
                         ],
@@ -120,8 +119,8 @@ class _AnimatedButtonState extends State<AnimatedButton>
                           widget.text,
                           style: TextStyle(
                             color: widget.textColor ?? Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],

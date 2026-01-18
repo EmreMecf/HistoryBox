@@ -28,23 +28,25 @@ class AppTheme {
         secondaryContainer: AppColors.accentOrange.withOpacity(0.2),
       ),
 
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.primaryRed,
-        foregroundColor: AppColors.textLight,
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.surfaceLight,
+        foregroundColor: AppColors.textDarkOnLight,
         elevation: 0,
-        centerTitle: true,
-        titleTextStyle: TextStyle(
+        centerTitle: false,
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: const TextStyle(
           fontSize: 20,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w600,
           fontFamily: AppTextStyles.fontFamily,
+          color: AppColors.textDarkOnLight,
         ),
       ),
 
       cardTheme: CardThemeData(
-        color: Colors.white,
-        elevation: 4,
+        color: AppColors.surfaceLight,
+        elevation: 0,
         margin: const EdgeInsets.all(8),
-        shadowColor: AppColors.primaryRed.withOpacity(0.2),
+        shadowColor: Colors.black.withOpacity(0.04),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusL),
         ),
@@ -72,31 +74,32 @@ class AppTheme {
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.surfaceLight,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-          borderSide: const BorderSide(color: AppColors.primaryRed),
+          borderSide: const BorderSide(color: AppColors.borderLight),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-          borderSide: BorderSide(color: AppColors.primaryRed.withOpacity(0.3)),
+          borderSide: const BorderSide(color: AppColors.borderLight),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-          borderSide: const BorderSide(color: AppColors.primaryRed, width: 2),
+          borderSide: const BorderSide(color: AppColors.primaryRed, width: 1.5),
         ),
       ),
 
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.primaryRed.withOpacity(0.1),
-        selectedColor: AppColors.primaryRed,
-        secondarySelectedColor: AppColors.accentTeal,
+        backgroundColor: AppColors.backgroundLight,
+        selectedColor: AppColors.primaryRed.withOpacity(0.15),
+        secondarySelectedColor: AppColors.accentTeal.withOpacity(0.15),
         padding: const EdgeInsets.symmetric(
           horizontal: AppDimensions.paddingM,
           vertical: AppDimensions.paddingS,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+          side: const BorderSide(color: AppColors.borderLight),
         ),
       ),
 
@@ -114,8 +117,8 @@ class AppTheme {
       ),
 
       dialogTheme: DialogThemeData(
-        backgroundColor: Colors.white,
-        elevation: 4,
+        backgroundColor: AppColors.surfaceLight,
+        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusL),
         ),
@@ -123,9 +126,9 @@ class AppTheme {
 
 
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: Colors.white,
-        modalBackgroundColor: Colors.white,
-        elevation: 4,
+        backgroundColor: AppColors.surfaceLight,
+        modalBackgroundColor: AppColors.surfaceLight,
+        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(20),
@@ -135,8 +138,8 @@ class AppTheme {
 
 
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: Colors.white,
-        contentTextStyle: const TextStyle(color: Colors.black87),
+        backgroundColor: AppColors.surfaceLight,
+        contentTextStyle: const TextStyle(color: AppColors.textDarkOnLight),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
         ),

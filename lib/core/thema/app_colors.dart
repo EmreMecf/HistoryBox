@@ -18,12 +18,15 @@ class AppColors {
   static const Color accentPurple = Color(0xFF9B59B6); // Mor
   static const Color accentTeal = Color(0xFF4ECDC4); // Turkuaz
   static const Color accentPink = Color(0xFFFF85A2); // Açık pembe
+  static const Color accentIndigo = Color(0xFF4F46E5);
+  static const Color accentViolet = Color(0xFF7C3AED);
 
   // Light Theme
-  static const Color backgroundLight = Color(0xFFFFF8F0); // Krem beyaz
-  static const Color surfaceLight = Colors.white;
+  static const Color backgroundLight = Color(0xFFF7F8FA);
+  static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color textLight = Colors.white;
-  static const Color textDarkOnLight = Color(0xFF2C3E50);
+  static const Color textDarkOnLight = Color(0xFF0F172A);
+  static const Color borderLight = Color(0xFFE5E7EB);
 
   // Dark Theme
   static const Color backgroundDark = Color(0xFF1A1A2E);
@@ -59,6 +62,26 @@ class AppColors {
   static const List<Color> primaryGradient = [
     Color(0xFFEA7B7B), // Ana kırmızı-pembe
     Color(0xFFD25353), // Orta kırmızı
+  ];
+
+  static const List<Color> premiumGradient = [
+    Color(0xFF4F46E5),
+    Color(0xFF7C3AED),
+  ];
+
+  static const List<Color> premiumWarmGradient = [
+    Color(0xFFF97316),
+    Color(0xFFEC4899),
+  ];
+
+  static const List<Color> premiumAppBarGradient = [
+    Color(0xFF1F1D2B),
+    Color(0xFF2B2152),
+  ];
+
+  static const List<Color> premiumBackgroundGradient = [
+    Color(0xFFF8FAFC),
+    Color(0xFFF3F4F6),
   ];
 
   static const List<Color> warmGradient = [

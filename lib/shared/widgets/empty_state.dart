@@ -1,6 +1,7 @@
 // lib/shared/widgets/empty_state.dart
 import 'package:flutter/material.dart';
 import '../../core/thema/app_dimensions.dart';
+import '../../core/thema/app_colors.dart';
 import 'animated_button.dart';
 
 class EmptyState extends StatelessWidget {
@@ -27,16 +28,26 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              emoji,
-              style: const TextStyle(fontSize: 80),
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppColors.primaryRed.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  emoji,
+                  style: const TextStyle(fontSize: 32),
+                ),
+              ),
             ),
             const SizedBox(height: AppDimensions.paddingL),
             Text(
               title,
               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
                 color: Theme.of(context).textTheme.titleLarge?.color,
               ),
               textAlign: TextAlign.center,
@@ -45,8 +56,12 @@ class EmptyState extends StatelessWidget {
             Text(
               message,
               style: TextStyle(
-                fontSize: 16,
-                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                fontSize: 14,
+                color: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.color
+                    ?.withOpacity(0.6),
               ),
               textAlign: TextAlign.center,
             ),

@@ -1,6 +1,7 @@
 // lib/shared/widgets/custom_text_field.dart
 import 'package:flutter/material.dart';
 import '../../core/thema/app_dimensions.dart';
+import '../../core/thema/app_colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
@@ -40,7 +41,7 @@ class CustomTextField extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Theme.of(context).textTheme.titleMedium?.color,
           ),
@@ -59,33 +60,33 @@ class CustomTextField extends StatelessWidget {
             hintText: hint,
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppDimensions.paddingM,
+              vertical: AppDimensions.paddingM,
+            ),
             filled: true,
             fillColor: enabled
                 ? Theme.of(context).inputDecorationTheme.fillColor
                 : Theme.of(context).disabledColor.withOpacity(0.1),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-              borderSide: BorderSide(
-                color: Theme.of(context).primaryColor.withOpacity(0.3),
-              ),
+              borderSide: const BorderSide(color: AppColors.borderLight),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-              borderSide: BorderSide(
-                color: Theme.of(context).primaryColor.withOpacity(0.3),
-              ),
+              borderSide: const BorderSide(color: AppColors.borderLight),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusM),
               borderSide: BorderSide(
                 color: Theme.of(context).primaryColor,
-                width: 2,
+                width: 1.5,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-              borderSide: const BorderSide(
-                color: Colors.red,
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.error,
               ),
             ),
           ),

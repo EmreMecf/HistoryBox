@@ -30,6 +30,7 @@ class StoryPreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final categoryColor = AppColors.categoryColors[category] ?? 
                           AppColors.primaryRed;
+    final theme = Theme.of(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -61,13 +62,14 @@ class StoryPreviewCard extends StatelessWidget {
           // Hikaye Kartı
           Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+              border: Border.all(color: AppColors.borderLight),
               boxShadow: [
                 BoxShadow(
-                  color: categoryColor.withOpacity(0.2),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
@@ -75,35 +77,29 @@ class StoryPreviewCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Başlık bölümü
-                Container(
+                Padding(
                   padding: const EdgeInsets.all(AppDimensions.paddingL),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [categoryColor, categoryColor.withOpacity(0.7)],
-                    ),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(AppDimensions.radiusL),
-                      topRight: Radius.circular(AppDimensions.radiusL),
-                    ),
-                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Text(
-                            AppAssets.categoryEmojis[category] ?? 
-                              AppAssets.bookEmoji,
-                            style: const TextStyle(fontSize: 24),
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: categoryColor,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                           const SizedBox(width: AppDimensions.paddingS),
                           Expanded(
                             child: Text(
                               title,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurface,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
@@ -116,25 +112,21 @@ class StoryPreviewCard extends StatelessWidget {
                           const SizedBox(width: AppDimensions.paddingS),
                           _buildChip(
                             ageGroup,
-                            AppColors.ageGroupColors[ageGroup] ?? 
-                              AppColors.accentBlue,
+                            AppColors.ageGroupColors[ageGroup] ??
+                                AppColors.accentBlue,
                           ),
                         ],
                       ),
+                      const SizedBox(height: AppDimensions.paddingM),
+                      Text(
+                        content,
+                        style: TextStyle(
+                          fontSize: 15,
+                          height: 1.7,
+                          color: theme.textTheme.bodyLarge?.color,
+                        ),
+                      ),
                     ],
-                  ),
-                ),
-                
-                // İçerik bölümü
-                Padding(
-                  padding: const EdgeInsets.all(AppDimensions.paddingL),
-                  child: Text(
-                    content,
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.8,
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                    ),
                   ),
                 ),
               ],
@@ -187,22 +179,19 @@ class StoryPreviewCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimensions.paddingM,
-        vertical: 4,
+        vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.5),
-          width: 1,
-        ),
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: color,
           fontSize: 12,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

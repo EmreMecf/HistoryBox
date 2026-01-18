@@ -11,6 +11,8 @@ import '../../../../auth/presentation/viewmodels/auth_view_model.dart';
 import '../viewmodels/story_create_view_model.dart';
 import '../widgets/age_group_card.dart';
 import '../widgets/story_preview_card.dart';
+import '../../../../../core/widgets/premium_app_bar.dart';
+import '../../../../../core/widgets/premium_header_card.dart';
 
 class StoryCreateScreen extends StatefulWidget {
   const StoryCreateScreen({super.key});
@@ -41,15 +43,18 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Yeni Hikaye Oluştur'),
+        backgroundColor: Colors.transparent,
+        appBar: PremiumAppBar(
+          title: const Text(
+            'Yeni Hikaye Oluştur',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_rounded),
             onPressed: () {
               if (viewModel.currentStep != StoryCreationStep.selectCategory) {
                 viewModel.goBack();
               } else {
-                // Güvenli geri dönüş
                 if (context.canPop()) {
                   context.pop();
                 } else {
@@ -58,15 +63,17 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
               }
             },
           ),
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: AppColors.sweetGradient,
-              ),
+        ),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: AppColors.premiumBackgroundGradient,
             ),
           ),
+          child: _buildBody(viewModel, authViewModel),
         ),
-        body: _buildBody(viewModel, authViewModel),
       ),
     );
   }
@@ -97,6 +104,12 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const PremiumHeaderCard(
+            icon: Icons.auto_awesome,
+            title: 'Hikaye Türü Seç',
+            subtitle: 'Sana uygun kategoriyle hikayeni başlat',
+          ),
+          const SizedBox(height: AppDimensions.paddingL),
           Row(
             children: [
               Text(
@@ -153,6 +166,12 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const PremiumHeaderCard(
+            icon: Icons.child_care_rounded,
+            title: 'Yaş Grubu',
+            subtitle: 'Hikayeyi yaşa uygun hale getirelim',
+          ),
+          const SizedBox(height: AppDimensions.paddingL),
           Row(
             children: [
               Text(
@@ -227,6 +246,12 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const PremiumHeaderCard(
+            icon: Icons.edit_rounded,
+            title: 'Hikaye Konusu',
+            subtitle: 'Kısa bir konu gir, gerisini AI yazsın',
+          ),
+          const SizedBox(height: AppDimensions.paddingL),
           Row(
             children: [
               Text(

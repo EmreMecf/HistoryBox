@@ -4,6 +4,9 @@ import 'package:historybox/viewmodel/profile_view_model.dart';
 import 'package:historybox/viewmodel/sign_out_view_model.dart';
 import 'package:provider/provider.dart';
 import '../core/translations/l10n/app_localizations.dart';
+import '../core/thema/app_colors.dart';
+import '../core/widgets/premium_app_bar.dart';
+import '../core/widgets/premium_header_card.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -17,15 +20,24 @@ class ProfileScreen extends StatelessWidget {
     final signOutViewModel = context.watch<SignOutViewModel>();
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        title: Text(l10n.profile_screen_app_bar_label),
-        backgroundColor: theme.colorScheme.surface,
-        elevation: 0,
+      backgroundColor: Colors.transparent,
+      appBar: PremiumAppBar(
+        title: Text(
+          l10n.profile_screen_app_bar_label,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.premiumBackgroundGradient,
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
             const SizedBox(height: 20),
             // Profile Header
             Hero(
@@ -34,20 +46,20 @@ class ProfileScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: theme.colorScheme.primary,
-                    width: 3,
+                    color: AppColors.borderLight,
+                    width: 2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: theme.colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 12,
-                      spreadRadius: 4,
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 16,
+                      spreadRadius: 2,
                     ),
                   ],
                 ),
                 child: CircleAvatar(
                   radius: 60,
-                  backgroundColor: theme.colorScheme.primaryContainer,
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
                   backgroundImage: profileViewModel.userPhoto != null
                       ? CachedNetworkImageProvider(profileViewModel.userPhoto!)
                       : null,
@@ -55,7 +67,7 @@ class ProfileScreen extends StatelessWidget {
                       ? Icon(
                           Icons.person_outline,
                           size: 60,
-                          color: theme.colorScheme.primary,
+                          color: theme.colorScheme.onSurface.withOpacity(0.5),
                         )
                       : null,
                 ),
@@ -65,16 +77,25 @@ class ProfileScreen extends StatelessWidget {
             Text(
               profileViewModel.userName ?? 'User',
               style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               profileViewModel.userEmail ?? '',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 13,
                 color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: PremiumHeaderCard(
+                icon: Icons.auto_awesome,
+                title: 'Profilin Hazır',
+                subtitle: 'Hikayelerini yönet ve ayarlarını kişiselleştir',
               ),
             ),
             const SizedBox(height: 24),
@@ -93,7 +114,7 @@ class ProfileScreen extends StatelessWidget {
                   Container(
                     width: 1,
                     height: 40,
-                    color: theme.colorScheme.outline.withOpacity(0.2),
+                    color: AppColors.borderLight,
                   ),
                   _buildStatItem(
                     context,
@@ -177,7 +198,8 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -195,12 +217,13 @@ class ProfileScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primaryContainer,
+            color: theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.borderLight),
           ),
           child: Icon(
             icon,
-            color: theme.colorScheme.primary,
+            color: theme.colorScheme.onSurface.withOpacity(0.7),
             size: 24,
           ),
         ),
@@ -210,7 +233,7 @@ class ProfileScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 4),
@@ -227,14 +250,20 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildMenuCard(BuildContext context, {required List<Widget> children}) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderLight),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
-      child: Column(
-        children: children,
-      ),
+      child: Column(children: children),
     );
   }
 

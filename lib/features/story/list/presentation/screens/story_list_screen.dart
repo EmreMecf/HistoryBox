@@ -8,6 +8,7 @@ import '../../../../../shared/widgets/loading_widget.dart';
 import '../../../../../shared/widgets/empty_state.dart';
 import '../../../../../shared/widgets/story_card.dart';
 import '../../../../../services/injector.dart';
+import '../../../../../core/widgets/premium_app_bar.dart';
 
 class StoryListScreen extends StatefulWidget {
   final String category;
@@ -26,39 +27,40 @@ class _StoryListScreenState extends State<StoryListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryColor = AppColors.categoryColors[widget.category] ?? 
-                          AppColors.primaryRed;
-
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.premiumBackgroundGradient,
+          ),
+        ),
+        child: CustomScrollView(
+          slivers: [
           // App Bar
           SliverAppBar(
-            expandedHeight: 150,
             pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    AppAssets.categoryEmojis[widget.category] ?? 
-                      AppAssets.bookEmoji,
-                    style: const TextStyle(fontSize: 24),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(widget.category),
-                ],
-              ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [categoryColor, categoryColor.withOpacity(0.7)],
-                  ),
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  AppAssets.categoryEmojis[widget.category] ?? 
+                    AppAssets.bookEmoji,
+                  style: const TextStyle(fontSize: 20),
                 ),
-              ),
+                const SizedBox(width: 8),
+                Text(
+                  widget.category,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
+            flexibleSpace: const PremiumAppBarBackground(),
           ),
 
           // Story List
@@ -95,7 +97,7 @@ class _StoryListScreenState extends State<StoryListScreen> {
                     message: 'Bu kategoride henüz hikaye oluşturulmamış.',
                     buttonText: 'Hikaye Oluştur',
                     onButtonPressed: () {
-                      context.go('/story/create');
+                      context.go('/story-create');
                     },
                   ),
                 );
@@ -131,7 +133,8 @@ class _StoryListScreenState extends State<StoryListScreen> {
               );
             },
           ),
-        ],
+          ],
+        ),
       ),
     );
   }

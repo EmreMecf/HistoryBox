@@ -36,104 +36,144 @@ class StoryCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: AppDimensions.paddingM),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+          border: Border.all(color: AppColors.borderLight),
           boxShadow: [
             BoxShadow(
-              color: categoryColor.withOpacity(0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            // Üst kısım - kategori rengi ile
-            Container(
-              padding: const EdgeInsets.all(AppDimensions.paddingM),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [categoryColor, categoryColor.withOpacity(0.7)],
-                ),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(AppDimensions.radiusL),
-                  topRight: Radius.circular(AppDimensions.radiusL),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+            Positioned.fill(
+              child: IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.white.withOpacity(0.08),
+                        Colors.transparent,
+                        Colors.white.withOpacity(0.04),
+                      ],
                     ),
                   ),
-                  if (onFavoriteToggle != null)
-                    IconButton(
-                      onPressed: onFavoriteToggle,
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: Colors.white,
-                      ),
-                    ),
-                ],
+                ),
               ),
             ),
-            // Alt kısım - detaylar
-            Padding(
-              padding: const EdgeInsets.all(AppDimensions.paddingM),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (preview != null) ...[
-                    Text(
-                      preview!,
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                        fontSize: 14,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: AppDimensions.paddingS),
-                  ],
-                  Row(
-                    children: [
-                      _buildChip(
-                        context,
-                        category,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 4,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
                         categoryColor,
+                        categoryColor.withOpacity(0.5),
+                      ],
+                    ),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(AppDimensions.radiusL),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(AppDimensions.paddingM),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: categoryColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: AppDimensions.paddingS),
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (onFavoriteToggle != null)
+                            IconButton(
+                              onPressed: onFavoriteToggle,
+                              icon: Icon(
+                                isFavorite ? Icons.favorite : Icons.favorite_border,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.6),
+                              ),
+                            ),
+                        ],
                       ),
-                      const SizedBox(width: AppDimensions.paddingS),
-                      _buildChip(
-                        context,
-                        ageGroup,
-                        AppColors.ageGroupColors[ageGroup] ??
-                            AppColors.accentBlue,
-                      ),
-                      const Spacer(),
-                      Text(
-                        createdAt.toFormattedDate(),
-                        style: TextStyle(
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.color
-                              ?.withOpacity(0.6),
-                          fontSize: 12,
+                      const SizedBox(height: AppDimensions.paddingS),
+                      if (preview != null) ...[
+                        Text(
+                          preview!,
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.color
+                                ?.withOpacity(0.7),
+                            fontSize: 13,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: AppDimensions.paddingS),
+                      ],
+                      Row(
+                        children: [
+                          _buildChip(
+                            context,
+                            category,
+                            categoryColor,
+                          ),
+                          const SizedBox(width: AppDimensions.paddingS),
+                          _buildChip(
+                            context,
+                            ageGroup,
+                            AppColors.ageGroupColors[ageGroup] ??
+                                AppColors.accentBlue,
+                          ),
+                          const Spacer(),
+                          Text(
+                            createdAt.toFormattedDate(),
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.color
+                                  ?.withOpacity(0.6),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
@@ -145,22 +185,19 @@ class StoryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimensions.paddingS,
-        vertical: 4,
+        vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-        border: Border.all(
-          color: color.withOpacity(0.5),
-          width: 1,
-        ),
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Text(
         label,
         style: TextStyle(
           color: color,
           fontSize: 11,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

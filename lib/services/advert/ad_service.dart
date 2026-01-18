@@ -9,12 +9,15 @@ class AdService {
   AdService._internal();
 
   bool _initialized = false;
+  bool _adsEnabled = true;
   RewardedAd? _cachedRewardedAd;
   InterstitialAd? _cachedInterstitialAd;
   BannerAd? _cachedBannerAd;
   bool _isBannerLoaded = false;
 
-  Future<void> initialize() async {
+  Future<void> initialize({bool enableAds = true}) async {
+    _adsEnabled = enableAds;
+    if (!_adsEnabled) return;
     if (_initialized) return;
     await MobileAds.instance.initialize();
 
@@ -27,6 +30,7 @@ class AdService {
   }
 
   void _preloadRewardedAd() {
+    if (!_adsEnabled) return;
     RewardedAd.load(
       adUnitId: _getAdMobRewardedId(),
       request: const AdRequest(),
@@ -45,6 +49,7 @@ class AdService {
   }
 
   void _preloadInterstitialAd() {
+    if (!_adsEnabled) return;
     InterstitialAd.load(
       adUnitId: _getAdMobInterstitialId(),
       request: const AdRequest(),
@@ -63,6 +68,7 @@ class AdService {
   }
 
   void _preloadBannerAd() {
+    if (!_adsEnabled) return;
     _cachedBannerAd?.dispose();
     _isBannerLoaded = false;
 
@@ -97,6 +103,7 @@ class AdService {
   }
 
   Future<Widget?> loadBannerAd() async {
+    if (!_adsEnabled) return null;
     if (!_initialized) {
       await initialize();
     }
@@ -158,6 +165,7 @@ class AdService {
   }
 
   Future<void> showRewardedAd({required Function onRewarded}) async {
+    if (!_adsEnabled) return;
     bool rewardEarned = false;
 
     if (_cachedRewardedAd != null) {
@@ -228,6 +236,7 @@ class AdService {
   }
 
   Future<void> showInterstitialAd() async {
+    if (!_adsEnabled) return;
     if (_cachedInterstitialAd != null) {
       final ad = _cachedInterstitialAd!;
       _cachedInterstitialAd = null;

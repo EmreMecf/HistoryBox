@@ -8,6 +8,7 @@ import '../../../../../shared/widgets/empty_state.dart';
 import '../../../../../shared/widgets/animated_button.dart';
 import '../../../../../services/injector.dart';
 import '../../../../../services/models/network/result.dart';
+import '../../../../../core/widgets/premium_app_bar.dart';
 
 class StoryDetailScreen extends StatefulWidget {
   final String storyId;
@@ -84,52 +85,30 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                           AppColors.primaryRed;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.premiumBackgroundGradient,
+          ),
+        ),
+        child: CustomScrollView(
+          slivers: [
           // App Bar
           SliverAppBar(
-            expandedHeight: 200,
             pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                _story!.title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black45,
-                      offset: Offset(0, 2),
-                      blurRadius: 4,
-                    ),
-                  ],
-                ),
-              ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [categoryColor, categoryColor.withOpacity(0.7)],
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      right: -20,
-                      bottom: -20,
-                      child: Opacity(
-                        opacity: 0.2,
-                        child: Text(
-                          AppAssets.categoryEmojis[_story!.category] ?? 
-                            AppAssets.bookEmoji,
-                          style: const TextStyle(fontSize: 150),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            title: Text(
+              _story!.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
+            flexibleSpace: const PremiumAppBarBackground(),
           ),
 
           // Content
@@ -137,6 +116,55 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
             padding: const EdgeInsets.all(AppDimensions.paddingL),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
+                // Header
+                Container(
+                  padding: const EdgeInsets.all(AppDimensions.paddingL),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                    border: Border.all(color: AppColors.borderLight),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: categoryColor.withOpacity(0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            AppAssets.categoryEmojis[_story!.category] ??
+                                AppAssets.bookEmoji,
+                            style: const TextStyle(fontSize: 22),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppDimensions.paddingM),
+                      Expanded(
+                        child: Text(
+                          _story!.title,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: AppDimensions.paddingL),
+
                 // Metadata
                 Row(
                   children: [
@@ -171,21 +199,22 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                 Container(
                   padding: const EdgeInsets.all(AppDimensions.paddingL),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                    border: Border.all(color: AppColors.borderLight),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
                   child: Text(
                     _story!.content,
                     style: TextStyle(
-                      fontSize: 18,
-                      height: 1.8,
+                      fontSize: 16,
+                      height: 1.7,
                       color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
@@ -195,7 +224,8 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
               ]),
             ),
           ),
-        ],
+          ],
+        ),
       ),
       
       // Floating Action Button
@@ -219,22 +249,19 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimensions.paddingM,
-        vertical: AppDimensions.paddingS,
+        vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-        border: Border.all(
-          color: color,
-          width: 2,
-        ),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Text(
         label,
         style: TextStyle(
           color: color,
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

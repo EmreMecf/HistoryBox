@@ -1,21 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:historybox/core/core.dart';
 import 'package:historybox/core/widgets/historybox_bottom_navigation_bar.dart';
 import 'package:historybox/features/home/presentation/widgets/modern_home_header.dart';
 import 'package:historybox/features/home/presentation/widgets/category_section.dart';
+import 'package:historybox/features/home/presentation/viewmodels/home_view_model.dart';
 import 'package:historybox/viewmodel/profile_view_model.dart';
 import 'package:provider/provider.dart';
+import '../core/constants/app_assets.dart';
 import '../core/translations/l10n/app_localizations.dart';
 import '../core/thema/app_colors.dart';
 import 'package:go_router/go_router.dart';
+import '../shared/widgets/story_card.dart';
+import '../shared/widgets/loading_widget.dart';
+import '../shared/widgets/empty_state.dart';
 
-class NewHomeScreen extends StatelessWidget {
+class NewHomeScreen extends StatefulWidget {
   const NewHomeScreen({super.key});
+
+  @override
+  State<NewHomeScreen> createState() => _NewHomeScreenState();
+}
+
+class _NewHomeScreenState extends State<NewHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HomeViewModel>().listenToRecentStories();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final profileViewModel = context.watch<ProfileViewModel>();
+    final homeViewModel = context.watch<HomeViewModel>();
     final userId = profileViewModel.userId;
 
     if (userId == null || userId.isEmpty) {
@@ -69,19 +89,30 @@ class NewHomeScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      body: SafeArea(
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            const SliverToBoxAdapter(child: ModernHomeHeader()),
-            SliverToBoxAdapter(child: _buildPromoSection(context)),
-            const SliverToBoxAdapter(child: CategorySection()),
-            SliverToBoxAdapter(child: _buildRecentStories(context)),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 100), // Bottom padding for nav bar
-            ),
-          ],
+      backgroundColor: Colors.transparent,
+      extendBody: true,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.premiumBackgroundGradient,
+          ),
+        ),
+        child: SafeArea(
+          bottom: false,
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              const SliverToBoxAdapter(child: ModernHomeHeader()),
+              SliverToBoxAdapter(child: _buildPromoSection(context)),
+              const SliverToBoxAdapter(child: CategorySection()),
+              SliverToBoxAdapter(child: _buildRecentStories(context, homeViewModel)),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 100), // Bottom padding for nav bar
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: const HistoryBoxBottomNavigationBar(
@@ -99,21 +130,16 @@ class NewHomeScreen extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: AppColors.warmGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
+          colors: AppColors.premiumWarmGradient,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.3),
-          width: 2,
-        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryRed.withOpacity(0.3),
+            color: AppColors.accentPink.withOpacity(0.35),
             blurRadius: 20,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -139,16 +165,9 @@ class NewHomeScreen extends StatelessWidget {
                 child: Text(
                   l10n.home_promo_heading,
                   style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
                     color: Colors.white,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 2),
-                        blurRadius: 4,
-                      ),
-                    ],
                   ),
                 ),
               ),
@@ -169,7 +188,7 @@ class NewHomeScreen extends StatelessWidget {
             label: Text(l10n.home_promo_button),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
-              foregroundColor: AppColors.primaryRed,
+              foregroundColor: AppColors.accentOrange,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -182,7 +201,7 @@ class NewHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentStories(BuildContext context) {
+  Widget _buildRecentStories(BuildContext context, HomeViewModel homeViewModel) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
@@ -209,45 +228,61 @@ class NewHomeScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          _buildEmptyState(context),
+          _buildRecentStoriesContent(context, homeViewModel),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildRecentStoriesContent(
+    BuildContext context,
+    HomeViewModel homeViewModel,
+  ) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
-        ),
-      ),
-      child: Center(
-        child: Column(
-          children: [
-            Icon(
-              Icons.book_outlined,
-              size: 48,
-              color: theme.colorScheme.primary.withOpacity(0.5),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              l10n.no_stories_yet,
-              style: TextStyle(
-                fontSize: 14,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+    if (homeViewModel.isLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: LoadingWidget(message: 'Hikayeler yükleniyor...'),
+      );
+    }
+
+    if (homeViewModel.errorMessage != null) {
+      return EmptyState(
+        emoji: AppAssets.cloudEmoji,
+        title: 'Bir Hata Oluştu',
+        message: homeViewModel.errorMessage!,
+        buttonText: 'Tekrar Dene',
+        onButtonPressed: () {
+          homeViewModel.listenToRecentStories();
+        },
+      );
+    }
+
+    if (homeViewModel.recentStories.isEmpty) {
+      return EmptyState(
+        emoji: AppAssets.magicEmoji,
+        title: 'Henüz Hikaye Yok',
+        message: 'İlk hikayeni oluştur ve macerana başla!',
+        buttonText: 'Hikaye Oluştur',
+        onButtonPressed: () => context.go('/story-create'),
+      );
+    }
+
+    return Column(
+      children: homeViewModel.recentStories.map((story) {
+        return StoryCard(
+          title: story.title,
+          category: story.category,
+          ageGroup: story.ageGroup,
+          createdAt: story.createdAt,
+          isFavorite: story.isFavorite,
+          preview: story.content.truncate(100),
+          onTap: () => context.go('/story-detail/${story.id}'),
+          onFavoriteToggle: null,
+        );
+      }).toList(),
     );
   }
 }

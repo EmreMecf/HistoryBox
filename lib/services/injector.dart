@@ -45,7 +45,7 @@ Future<void> initInjector() async {
   
   chatGptDio.interceptors.add(
     PrettyDioLogger(
-      requestHeader: true,
+      requestHeader: false,
       requestBody: true,
       responseBody: true,
       responseHeader: false,
