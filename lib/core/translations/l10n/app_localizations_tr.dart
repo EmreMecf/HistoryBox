@@ -251,6 +251,35 @@ class AppLocalizationsTr extends AppLocalizations {
   String get favorite_stories => 'Favori Hikayeler';
 
   @override
+  String get buyTokens => 'Token Satın Al';
+
+  @override
+  String currentTokens(Object count) {
+    return 'Mevcut Token: $count';
+  }
+
+  @override
+  String watchAd(Object count) {
+    return 'Reklam İzle ($count Token)';
+  }
+
+  @override
+  String get tokenInfoText =>
+      'Her hikaye oluşturma için 1 token kullanılır. Tokenler reklam izleyerek veya satın alarak kazanılabilir.';
+
+  @override
+  String tokensPurchased(Object count) {
+    return '$count token satın aldınız!';
+  }
+
+  @override
+  String get insufficientTokens => 'Yetersiz Token';
+
+  @override
+  String get tokenWarningMessage =>
+      'Hikaye oluşturabilmek için token\'a ihtiyacınız var. Reklam izleyerek ücretsiz token kazanabilir veya token satın alabilirsiniz.';
+
+  @override
   String get rename_dialog_heading_label => 'Hikayeyi Yeniden Adlandır';
 
   @override

@@ -250,6 +250,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favorite_stories => 'Favorite Stories';
 
   @override
+  String get buyTokens => 'Buy Tokens';
+
+  @override
+  String currentTokens(Object count) {
+    return 'Current Tokens: $count';
+  }
+
+  @override
+  String watchAd(Object count) {
+    return 'Watch Ad ($count Tokens)';
+  }
+
+  @override
+  String get tokenInfoText =>
+      'Each story creation uses 1 token. Tokens can be earned by watching ads or purchasing.';
+
+  @override
+  String tokensPurchased(Object count) {
+    return 'You purchased $count tokens!';
+  }
+
+  @override
+  String get insufficientTokens => 'Insufficient Tokens';
+
+  @override
+  String get tokenWarningMessage =>
+      'You need tokens to create stories. You can earn free tokens by watching ads or purchase tokens.';
+
+  @override
   String get rename_dialog_heading_label => 'Rename Story';
 
   @override

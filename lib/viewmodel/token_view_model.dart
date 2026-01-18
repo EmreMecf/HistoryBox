@@ -1,161 +1,218 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:historybox/core/utils/logger.dart';
-import 'package:historybox/services/models/firebase/token_model.dart';
+import '../services/advert/ad_service.dart';
+import '../services/apis/purchase_service.dart';
+import '../services/models/network/result.dart';
+import '../services/models/token/token_model.dart';
+import '../services/repositories/token_repository.dart';
 
 class TokenViewModel extends ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TokenRepository _tokenRepository;
+  final FirebaseAuth _auth;
+  final PurchaseService _purchaseService;
 
   TokenModel? _tokenModel;
   bool _isLoading = false;
+  String? _errorMessage;
+  BuildContext? _context;
 
   TokenModel? get tokenModel => _tokenModel;
-  int? get tokenCount => _tokenModel?.remainingTokens;
-  int? get usedTokens => _tokenModel?.usedTokens;
-  int? get totalTokens => _tokenModel?.totalTokens;
+  int get tokenCount => _tokenModel?.tokenCount ?? 0;
   bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+  bool get hasTokens => _tokenModel != null && _tokenModel!.tokenCount > 0;
 
-  static const int defaultMonthlyTokens = 100;
+  TokenViewModel(this._tokenRepository, this._auth, this._purchaseService);
+
+  void setContext(BuildContext? context) {
+    _context = context;
+  }
 
   Future<void> loadTokens() async {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null) return;
-
-    _isLoading = true;
-    notifyListeners();
-
     try {
-      final docSnapshot =
-          await _firestore.collection('tokens').doc(userId).get();
-
-      if (docSnapshot.exists) {
-        _tokenModel = TokenModel.fromJson(docSnapshot.data()!);
-        await _checkAndResetMonthlyTokens();
-      } else {
-        // İlk kez token oluştur
-        await _createInitialTokens(userId);
+      if (_auth.currentUser == null) {
+        _tokenModel = null;
+        _isLoading = false;
+        notifyListeners();
+        return;
       }
-    } catch (e) {
-      AppLogger.error('Token yüklenirken hata', error: e);
-    } finally {
+
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+
+      final userId = _auth.currentUser!.uid;
+      final result = await _tokenRepository.getUserTokens(userId);
+
+      if (result is Success<TokenModel, Exception>) {
+        _tokenModel = result.value;
+      } else if (result is Failure<TokenModel, Exception>) {
+        _errorMessage = result.exception.toString();
+        debugPrint('Token load error: $_errorMessage');
+      }
+
       _isLoading = false;
       notifyListeners();
-    }
-  }
-
-  Future<void> _createInitialTokens(String userId) async {
-    _tokenModel = TokenModel(
-      userId: userId,
-      totalTokens: defaultMonthlyTokens,
-      usedTokens: 0,
-      remainingTokens: defaultMonthlyTokens,
-      lastUpdated: DateTime.now(),
-      lastResetDate: DateTime.now(),
-    );
-
-    await _firestore
-        .collection('tokens')
-        .doc(userId)
-        .set(_tokenModel!.toJson());
-    
-    AppLogger.info('İlk tokenlar oluşturuldu: $defaultMonthlyTokens token');
-  }
-
-  Future<bool> useToken({int amount = 1}) async {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null || _tokenModel == null) return false;
-
-    if (_tokenModel!.remainingTokens < amount) {
-      AppLogger.warning('Yetersiz token');
-      return false;
-    }
-
-    try {
-      final updatedModel = _tokenModel!.copyWith(
-        usedTokens: _tokenModel!.usedTokens + amount,
-        remainingTokens: _tokenModel!.remainingTokens - amount,
-        lastUpdated: DateTime.now(),
-      );
-
-      await _firestore
-          .collection('tokens')
-          .doc(userId)
-          .update(updatedModel.toJson());
-
-      _tokenModel = updatedModel;
-      notifyListeners();
-
-      AppLogger.info('$amount token kullanıldı. Kalan: ${_tokenModel!.remainingTokens}');
-      return true;
     } catch (e) {
-      AppLogger.error('Token kullanılırken hata', error: e);
+      _isLoading = false;
+      _errorMessage = e.toString();
+      debugPrint('Token load exception: $e');
+      notifyListeners();
+    }
+  }
+
+  Future<bool> useToken() async {
+    try {
+      if (_auth.currentUser == null) return false;
+      if (_tokenModel == null || _tokenModel!.tokenCount <= 0) return false;
+
+      final userId = _auth.currentUser!.uid;
+      final result = await _tokenRepository.useToken(userId);
+
+      if (result is Success<bool, Exception>) {
+        await loadTokens();
+        return true;
+      } else {
+        _errorMessage = (result as Failure).exception.toString();
+        debugPrint('Token use error: $_errorMessage');
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = e.toString();
+      debugPrint('Token use exception: $e');
+      notifyListeners();
       return false;
     }
   }
 
-  Future<void> _checkAndResetMonthlyTokens() async {
-    if (_tokenModel == null) return;
+  Future<bool> addTokensByAd() async {
+    try {
+      if (_auth.currentUser == null) return false;
 
-    final now = DateTime.now();
-    final lastReset = _tokenModel!.lastResetDate ?? _tokenModel!.lastUpdated;
+      final completer = Completer<bool>();
+      final adService = AdService();
 
-    // Ay değişti mi kontrol et
-    if (now.month != lastReset.month || now.year != lastReset.year) {
-      await _resetMonthlyTokens();
+      await adService.showRewardedAd(
+        onRewarded: () async {
+          try {
+            final userId = _auth.currentUser!.uid;
+            final result = await _tokenRepository.addTokens(userId, 2);
+
+            if (result is Success<bool, Exception>) {
+              await loadTokens();
+              completer.complete(true);
+            } else {
+              _errorMessage = (result as Failure).exception.toString();
+              notifyListeners();
+              completer.complete(false);
+            }
+          } catch (e) {
+            _errorMessage = e.toString();
+            debugPrint('Token add exception: $e');
+            notifyListeners();
+            completer.complete(false);
+          }
+        },
+      );
+
+      return completer.future;
+    } catch (e) {
+      _errorMessage = e.toString();
+      debugPrint('Ad show exception: $e');
+      notifyListeners();
+      return false;
     }
   }
 
-  Future<void> _resetMonthlyTokens() async {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null || _tokenModel == null) return;
-
+  Future<bool> purchaseTokens(String packageId) async {
     try {
-      final updatedModel = _tokenModel!.copyWith(
-        totalTokens: defaultMonthlyTokens,
-        usedTokens: 0,
-        remainingTokens: defaultMonthlyTokens,
-        lastUpdated: DateTime.now(),
-        lastResetDate: DateTime.now(),
-      );
+      if (_auth.currentUser == null) return false;
 
-      await _firestore
-          .collection('tokens')
-          .doc(userId)
-          .update(updatedModel.toJson());
-
-      _tokenModel = updatedModel;
-      notifyListeners();
-
-      AppLogger.info('Aylık tokenlar sıfırlandı: $defaultMonthlyTokens token');
+      final success = await _purchaseService.buyTokenPackage(packageId);
+      if (success) {
+        await loadTokens();
+        return true;
+      }
+      return false;
     } catch (e) {
-      AppLogger.error('Token sıfırlanırken hata', error: e);
+      _errorMessage = e.toString();
+      debugPrint('Purchase exception: $e');
+      notifyListeners();
+      return false;
     }
   }
 
-  Future<void> addBonusTokens(int amount) async {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null || _tokenModel == null) return;
-
+  Future<bool> checkTokenForChatGPT() async {
     try {
-      final updatedModel = _tokenModel!.copyWith(
-        totalTokens: _tokenModel!.totalTokens + amount,
-        remainingTokens: _tokenModel!.remainingTokens + amount,
-        lastUpdated: DateTime.now(),
-      );
+      if (_auth.currentUser == null) return false;
 
-      await _firestore
-          .collection('tokens')
-          .doc(userId)
-          .update(updatedModel.toJson());
+      await loadTokens();
 
-      _tokenModel = updatedModel;
-      notifyListeners();
-
-      AppLogger.info('$amount bonus token eklendi');
+      return hasTokens;
     } catch (e) {
-      AppLogger.error('Bonus token eklenirken hata', error: e);
+      debugPrint('Token check exception: $e');
+      return false;
+    }
+  }
+
+  void clearTokens() {
+    _tokenModel = null;
+    _errorMessage = null;
+    _isLoading = false;
+    _context = null;
+    notifyListeners();
+  }
+
+  List<Map<String, dynamic>> getTokenPackages({BuildContext? context}) {
+    final effectiveContext = context ?? _context;
+    final isEnglish = effectiveContext != null
+        ? Localizations.localeOf(effectiveContext).languageCode == 'en'
+        : false;
+
+    if (isEnglish) {
+      return [
+        {
+          'amount': 5,
+          'price': '₺9.99',
+          'label': 'Small Package',
+          'id': 'small_token_package'
+        },
+        {
+          'amount': 15,
+          'price': '₺24.99',
+          'label': 'Medium Package',
+          'id': 'medium_token_package'
+        },
+        {
+          'amount': 50,
+          'price': '₺69.99',
+          'label': 'Large Package',
+          'id': 'large_token_package'
+        },
+      ];
+    } else {
+      return [
+        {
+          'amount': 5,
+          'price': '₺9.99',
+          'label': 'Küçük Paket',
+          'id': 'small_token_package'
+        },
+        {
+          'amount': 15,
+          'price': '₺24.99',
+          'label': 'Orta Paket',
+          'id': 'medium_token_package'
+        },
+        {
+          'amount': 50,
+          'price': '₺69.99',
+          'label': 'Büyük Paket',
+          'id': 'large_token_package'
+        },
+      ];
     }
   }
 }

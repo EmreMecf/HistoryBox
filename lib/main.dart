@@ -12,6 +12,7 @@ import 'core/configs/historybox_cache_manager.dart';
 import 'firebase_options.dart';
 
 // Services & DI
+import 'services/advert/ad_service.dart';
 import 'services/injector.dart';
 import 'services/navigation/navigation.dart';
 
@@ -42,6 +43,10 @@ Future<void> main() async {
   // Clear cache on startup
   await HistoryBoxCacheManager.instance.clearCache();
 
+  // Initialize ads
+  final adService = AdService();
+  await adService.initialize();
+
   runApp(
     MultiProvider(
       providers: [
@@ -52,7 +57,7 @@ Future<void> main() async {
           create: (_) => LanguageViewModel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => TokenViewModel()..loadTokens(),
+          create: (_) => injector<TokenViewModel>()..loadTokens(),
         ),
         ChangeNotifierProvider(
           create: (_) => ProfileViewModel()..loadUserData(),

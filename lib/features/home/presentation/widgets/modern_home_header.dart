@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:historybox/core/widgets/token_display_widget.dart';
+import 'package:historybox/features/token/token_display.dart';
 import 'package:historybox/viewmodel/profile_view_model.dart';
 import 'package:historybox/viewmodel/token_view_model.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +51,7 @@ class _ModernHomeHeaderState extends State<ModernHomeHeader>
     final tokenViewModel = context.watch<TokenViewModel>();
 
     final storiesCount = profileViewModel.storiesCount;
-    final tokenCount = tokenViewModel.tokenCount ?? 0;
+    final tokenCount = tokenViewModel.tokenCount;
 
     return FadeTransition(
       opacity: _fadeAnimation,

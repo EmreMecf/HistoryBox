@@ -572,6 +572,48 @@ abstract class AppLocalizations {
   /// **'Favorite Stories'**
   String get favorite_stories;
 
+  /// No description provided for @buyTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Tokens'**
+  String get buyTokens;
+
+  /// No description provided for @currentTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Tokens: {count}'**
+  String currentTokens(Object count);
+
+  /// No description provided for @watchAd.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch Ad ({count} Tokens)'**
+  String watchAd(Object count);
+
+  /// No description provided for @tokenInfoText.
+  ///
+  /// In en, this message translates to:
+  /// **'Each story creation uses 1 token. Tokens can be earned by watching ads or purchasing.'**
+  String get tokenInfoText;
+
+  /// No description provided for @tokensPurchased.
+  ///
+  /// In en, this message translates to:
+  /// **'You purchased {count} tokens!'**
+  String tokensPurchased(Object count);
+
+  /// No description provided for @insufficientTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient Tokens'**
+  String get insufficientTokens;
+
+  /// No description provided for @tokenWarningMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You need tokens to create stories. You can earn free tokens by watching ads or purchase tokens.'**
+  String get tokenWarningMessage;
+
   /// No description provided for @rename_dialog_heading_label.
   ///
   /// In en, this message translates to:
