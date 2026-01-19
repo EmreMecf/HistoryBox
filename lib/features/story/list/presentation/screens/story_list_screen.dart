@@ -8,7 +8,6 @@ import '../../../../../shared/widgets/loading_widget.dart';
 import '../../../../../shared/widgets/empty_state.dart';
 import '../../../../../shared/widgets/story_card.dart';
 import '../../../../../services/injector.dart';
-import '../../../../../core/widgets/premium_app_bar.dart';
 
 class StoryListScreen extends StatefulWidget {
   final String category;
@@ -29,42 +28,23 @@ class _StoryListScreenState extends State<StoryListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: AppColors.premiumBackgroundGradient,
-          ),
-        ),
-        child: CustomScrollView(
-          slivers: [
-          // App Bar
-          SliverAppBar(
-            pinned: true,
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            foregroundColor: Colors.white,
-            title: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  AppAssets.categoryEmojis[widget.category] ?? 
-                    AppAssets.bookEmoji,
-                  style: const TextStyle(fontSize: 20),
+      extendBody: true,
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: AnimatedSoftBackground(
+          colors: AppColors.premiumBackgroundGradient,
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: BackButtonHeader(
+                  title: widget.category,
+                  fallbackRoute: '/',
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  widget.category,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-            flexibleSpace: const PremiumAppBarBackground(),
-          ),
-
-          // Story List
-          StreamBuilder<List<StoryModel>>(
+              ),
+              // Story List
+              StreamBuilder<List<StoryModel>>(
             stream: _storyService.getStoriesByCategory(widget.category),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -133,7 +113,8 @@ class _StoryListScreenState extends State<StoryListScreen> {
               );
             },
           ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -91,15 +91,11 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBody: true,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: AppColors.premiumBackgroundGradient,
-          ),
-        ),
+      body: AnimatedSoftBackground(
+        colors: AppColors.premiumBackgroundGradient,
+        backgroundColor: theme.colorScheme.surface,
         child: SafeArea(
+          top: true,
           bottom: false,
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(),

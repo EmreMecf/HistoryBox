@@ -33,7 +33,7 @@ class HistoryBoxBottomNavigationBar extends StatelessWidget {
       ),
       _NavItem(
         icon: Icons.add_circle_outline,
-        activeIcon: Icons.add_circle,
+        activeIcon: Icons.add,
         label: l10n.nav_bar_create_label,
         route: '/story-create',
       ),
@@ -80,21 +80,12 @@ class HistoryBoxBottomNavigationBar extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(7),
-                              decoration: BoxDecoration(
-                                color: isActive
-                                    ? AppColors.primaryRed.withOpacity(0.16)
-                                    : Colors.transparent,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                isActive ? item.activeIcon : item.icon,
-                                color: isActive
-                                    ? AppColors.primaryRed
-                                    : theme.colorScheme.onSurface.withOpacity(0.7),
-                                size: 24,
-                              ),
+                            Icon(
+                              isActive ? item.activeIcon : item.icon,
+                              color: isActive
+                                  ? AppColors.primaryRed
+                                  : theme.colorScheme.onSurface.withOpacity(0.7),
+                              size: 24,
                             ),
                             const SizedBox(height: 4),
                             Text(

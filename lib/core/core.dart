@@ -18,3 +18,8 @@ export 'extensions/date_extensions.dart';
 // Utils
 export 'utils/validators.dart';
 export 'utils/logger.dart';
+
+// Widgets
+export 'widgets/animated_soft_background.dart';
+export 'widgets/back_button_header.dart';
+export 'widgets/banner_ad_slot.dart';

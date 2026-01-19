@@ -4,11 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:historybox/core/widgets/historybox_bottom_navigation_bar.dart';
 import 'package:historybox/services/models/firebase/story_model.dart';
+import 'package:flutter/services.dart';
 import '../core/translations/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../core/thema/app_colors.dart';
-import '../core/widgets/premium_app_bar.dart';
+import '../core/widgets/back_button_header.dart';
 import '../core/widgets/premium_header_card.dart';
+import '../core/widgets/animated_soft_background.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -21,11 +23,10 @@ class HistoryScreen extends StatelessWidget {
 
     if (userId == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.history_screen_app_bar_label),
-        ),
-        body: Center(
-          child: Text(l10n.home_login_required_title),
+        body: SafeArea(
+          child: Center(
+            child: Text(l10n.home_login_required_title),
+          ),
         ),
       );
     }
@@ -33,92 +34,93 @@ class HistoryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBody: true,
-      appBar: PremiumAppBar(
-        title: Text(
-          l10n.history_screen_app_bar_label,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+      extendBodyBehindAppBar: true,
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark.copyWith(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
         ),
-      ),
-      body: SafeArea(
-        bottom: false,
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: AppColors.premiumBackgroundGradient,
-            ),
-          ),
-          child: Column(
-            children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: PremiumHeaderCard(
-                icon: Icons.history_rounded,
-                title: l10n.history_screen_app_bar_label,
-                subtitle: 'Son oluşturduğun hikayeler burada listelenir',
-              ),
-            ),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('stories')
-                    .where('userId', isEqualTo: userId)
-                    .orderBy('createdAt', descending: true)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+        child: AnimatedSoftBackground(
+          colors: AppColors.premiumBackgroundGradient,
+          backgroundColor: theme.colorScheme.surface,
+          child: SafeArea(
+            top: true,
+            bottom: false,
+            child: Column(
+              children: [
+                BackButtonHeader(
+                  title: l10n.history_screen_app_bar_label,
+                  fallbackRoute: '/',
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: PremiumHeaderCard(
+                    icon: Icons.history_rounded,
+                    title: l10n.history_screen_app_bar_label,
+                    subtitle: 'Son oluşturduğun hikayeler burada listelenir',
+                  ),
+                ),
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('stories')
+                        .where('userId', isEqualTo: userId)
+                        .orderBy('createdAt', descending: true)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  }
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Error: ${snapshot.error}'),
+                        );
+                      }
 
-                  final stories = snapshot.data?.docs ?? [];
+                      final stories = snapshot.data?.docs ?? [];
 
-                  if (stories.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.book_outlined,
-                            size: 64,
-                            color: theme.colorScheme.primary.withOpacity(0.5),
+                      if (stories.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.book_outlined,
+                                size: 64,
+                                color: theme.colorScheme.primary.withOpacity(0.5),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                l10n.no_stories_yet,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            l10n.no_stories_yet,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+                        );
+                      }
 
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: stories.length,
-                    itemBuilder: (context, index) {
-                      final storyData = stories[index].data() as Map<String, dynamic>;
-                      final story = StoryModel.fromJson({
-                        ...storyData,
-                        'id': stories[index].id,
-                      });
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: stories.length,
+                        itemBuilder: (context, index) {
+                          final storyData = stories[index].data() as Map<String, dynamic>;
+                          final story = StoryModel.fromJson({
+                            ...storyData,
+                            'id': stories[index].id,
+                          });
 
-                      return _StoryCard(story: story);
+                          return _StoryCard(story: story);
+                        },
+                      );
                     },
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
-            ],
           ),
         ),
       ),

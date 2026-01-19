@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import '../core/translations/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../core/thema/app_colors.dart';
-import '../core/widgets/premium_app_bar.dart';
+import '../core/widgets/back_button_header.dart';
 import '../core/widgets/premium_header_card.dart';
+import '../core/widgets/animated_soft_background.dart';
 
 class FeedbackScreen extends StatelessWidget {
   const FeedbackScreen({super.key});
@@ -15,24 +16,25 @@ class FeedbackScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: PremiumAppBar(
-        title: Text(
-          l10n.feedback_screen_app_bar_label,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: AppColors.premiumBackgroundGradient,
-          ),
-        ),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      extendBody: true,
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: AnimatedSoftBackground(
+          colors: AppColors.premiumBackgroundGradient,
+          backgroundColor: theme.colorScheme.surface,
+          child: Column(
+            children: [
+              BackButtonHeader(
+                title: l10n.feedback_screen_app_bar_label,
+                fallbackRoute: '/settings',
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
             PremiumHeaderCard(
               icon: Icons.feedback_outlined,
               title: l10n.feedback_description_heading,
@@ -54,7 +56,12 @@ class FeedbackScreen extends StatelessWidget {
               subtitle: 'www.historybox.com',
               onTap: () => _launchUrl('https://historybox.com'),
             ),
-          ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 // lib/features/auth/presentation/screens/login_screen.dart
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/core.dart';
@@ -13,8 +14,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
+  late AnimationController _backgroundController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
@@ -26,6 +28,10 @@ class _LoginScreenState extends State<LoginScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
+    _backgroundController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 14),
+    )..repeat();
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
@@ -57,6 +63,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _animationController.dispose();
+    _backgroundController.dispose();
     super.dispose();
   }
 
@@ -65,42 +72,35 @@ class _LoginScreenState extends State<LoginScreen>
     final authViewModel = context.watch<AuthViewModel>();
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.backgroundLight,
-              AppColors.surfaceLight,
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              const Spacer(),
-              // Logo ve Başlık
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: _buildLogoSection(),
+      body: Stack(
+        children: [
+          _AnimatedLoginBackground(controller: _backgroundController),
+          SafeArea(
+            child: Column(
+              children: [
+                const Spacer(),
+                // Logo ve Başlık
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: _buildLogoSection(),
+                  ),
                 ),
-              ),
-              const Spacer(),
-              // Giriş Butonları
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: SlideTransition(
-                  position: _slideAnimation,
-                  child: _buildLoginButtons(authViewModel),
+                const Spacer(),
+                // Giriş Butonları
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: _buildLoginButtons(authViewModel),
+                  ),
                 ),
-              ),
-              const SizedBox(height: AppDimensions.paddingXL),
-            ],
+                const SizedBox(height: AppDimensions.paddingXL),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -192,84 +192,83 @@ class _LoginScreenState extends State<LoginScreen>
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimensions.paddingXL,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Google Sign In Button
-          AnimatedButton(
-            text: 'Google ile Giriş Yap',
-            onPressed: () => _handleGoogleSignIn(authViewModel),
-            isLoading: authViewModel.isLoading,
-            backgroundColor: AppColors.surfaceLight,
-            textColor: AppColors.textDarkOnLight,
-            width: double.infinity,
-          ),
-          
-          const SizedBox(height: AppDimensions.paddingM),
-          
-          // Ayırıcı
-          Row(
-            children: [
-              Expanded(
-                child: Divider(
-                  color: AppColors.borderLight,
-                  thickness: 1,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingM,
-                ),
-                child: Text(
-                  'veya',
-                  style: TextStyle(
-                    color: AppColors.textDarkOnLight.withOpacity(0.5),
-                    fontSize: 14,
+      child: _GlassPanel(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Google Sign In Button
+            AnimatedButton(
+              text: 'Google ile Giriş Yap',
+              onPressed: () => _handleGoogleSignIn(authViewModel),
+              isLoading: authViewModel.isLoading,
+              backgroundColor: Colors.white,
+              textColor: AppColors.textDarkOnLight,
+              width: double.infinity,
+            ),
+            const SizedBox(height: AppDimensions.paddingM),
+            // Ayırıcı
+            Row(
+              children: [
+                Expanded(
+                  child: Divider(
+                    color: Colors.white.withOpacity(0.5),
+                    thickness: 1,
                   ),
                 ),
-              ),
-              Expanded(
-                child: Divider(
-                  color: AppColors.borderLight,
-                  thickness: 1,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppDimensions.paddingM,
+                  ),
+                  child: Text(
+                    'veya',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.85),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: AppDimensions.paddingM),
-          
-          // Misafir Girişi
-          TextButton(
-            onPressed: authViewModel.isLoading
-                ? null
-                : () => authViewModel.signInAsGuest(),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.textDarkOnLight,
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimensions.paddingL,
-                vertical: AppDimensions.paddingM,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  AppAssets.rocketEmoji,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                const SizedBox(width: AppDimensions.paddingS),
-                const Text(
-                  'Misafir Olarak Devam Et',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Divider(
+                    color: Colors.white.withOpacity(0.5),
+                    thickness: 1,
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: AppDimensions.paddingM),
+            // Misafir Girişi
+            TextButton(
+              onPressed: authViewModel.isLoading
+                  ? null
+                  : () => authViewModel.signInAsGuest(),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
+                  vertical: AppDimensions.paddingM,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    AppAssets.rocketEmoji,
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                  const SizedBox(width: AppDimensions.paddingS),
+                  const Text(
+                    'Misafir Olarak Devam Et',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -296,5 +295,116 @@ class _LoginScreenState extends State<LoginScreen>
         );
       }
     }
+  }
+}
+
+class _GlassPanel extends StatelessWidget {
+  final Widget child;
+
+  const _GlassPanel({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        padding: const EdgeInsets.all(AppDimensions.paddingL),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.18),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white.withOpacity(0.35)),
+        ),
+        child: child,
+      ),
+    );
+  }
+}
+
+class _AnimatedLoginBackground extends StatelessWidget {
+  final AnimationController controller;
+
+  const _AnimatedLoginBackground({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        final t = controller.value;
+        final alignment = Alignment(
+          math.sin(t * math.pi * 2) * 0.6,
+          math.cos(t * math.pi * 2) * 0.6,
+        );
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: alignment,
+                    end: -alignment,
+                    colors: [
+                      AppColors.primaryRed.withOpacity(0.35),
+                      AppColors.accentOrange.withOpacity(0.35),
+                      AppColors.accentBlue.withOpacity(0.35),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 40 + 20 * math.sin(t * math.pi * 2),
+              top: 120 + 30 * math.cos(t * math.pi * 2),
+              child: _GlowBubble(
+                size: 160,
+                color: Colors.white.withOpacity(0.18),
+              ),
+            ),
+            Positioned(
+              right: 20 + 24 * math.cos(t * math.pi * 2),
+              top: 40 + 20 * math.sin(t * math.pi * 2),
+              child: _GlowBubble(
+                size: 120,
+                color: Colors.white.withOpacity(0.14),
+              ),
+            ),
+            Positioned(
+              left: 60 + 30 * math.cos(t * math.pi * 2),
+              bottom: 80 + 22 * math.sin(t * math.pi * 2),
+              child: _GlowBubble(
+                size: 200,
+                color: Colors.white.withOpacity(0.12),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _GlowBubble extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _GlowBubble({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color,
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.6),
+            blurRadius: 40,
+            spreadRadius: 10,
+          ),
+        ],
+      ),
+    );
   }
 }

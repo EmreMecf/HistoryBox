@@ -13,6 +13,7 @@ class TokenViewModel extends ChangeNotifier {
   final PurchaseService _purchaseService;
 
   TokenModel? _tokenModel;
+  static const int _defaultTokenCount = 5;
   bool _isLoading = false;
   String? _errorMessage;
   BuildContext? _context;
@@ -43,14 +44,11 @@ class TokenViewModel extends ChangeNotifier {
       notifyListeners();
 
       final userId = _auth.currentUser!.uid;
-      final result = await _tokenRepository.getUserTokens(userId);
-
-      if (result is Success<TokenModel, Exception>) {
-        _tokenModel = result.value;
-      } else if (result is Failure<TokenModel, Exception>) {
-        _errorMessage = result.exception.toString();
-        debugPrint('Token load error: $_errorMessage');
-      }
+      _tokenModel ??= TokenModel(
+        userId: userId,
+        tokenCount: _defaultTokenCount,
+        lastUpdated: DateTime.now(),
+      );
 
       _isLoading = false;
       notifyListeners();
@@ -67,18 +65,13 @@ class TokenViewModel extends ChangeNotifier {
       if (_auth.currentUser == null) return false;
       if (_tokenModel == null || _tokenModel!.tokenCount <= 0) return false;
 
-      final userId = _auth.currentUser!.uid;
-      final result = await _tokenRepository.useToken(userId);
-
-      if (result is Success<bool, Exception>) {
-        await loadTokens();
-        return true;
-      } else {
-        _errorMessage = (result as Failure).exception.toString();
-        debugPrint('Token use error: $_errorMessage');
-        notifyListeners();
-        return false;
-      }
+      _tokenModel = TokenModel(
+        userId: _tokenModel!.userId,
+        tokenCount: _tokenModel!.tokenCount - 1,
+        lastUpdated: DateTime.now(),
+      );
+      notifyListeners();
+      return true;
     } catch (e) {
       _errorMessage = e.toString();
       debugPrint('Token use exception: $e');
@@ -95,25 +88,15 @@ class TokenViewModel extends ChangeNotifier {
       final adService = AdService();
 
       await adService.showRewardedAd(
-        onRewarded: () async {
-          try {
-            final userId = _auth.currentUser!.uid;
-            final result = await _tokenRepository.addTokens(userId, 2);
-
-            if (result is Success<bool, Exception>) {
-              await loadTokens();
-              completer.complete(true);
-            } else {
-              _errorMessage = (result as Failure).exception.toString();
-              notifyListeners();
-              completer.complete(false);
-            }
-          } catch (e) {
-            _errorMessage = e.toString();
-            debugPrint('Token add exception: $e');
-            notifyListeners();
-            completer.complete(false);
-          }
+        onRewarded: () {
+          final current = _tokenModel?.tokenCount ?? 0;
+          _tokenModel = TokenModel(
+            userId: _auth.currentUser!.uid,
+            tokenCount: current + 2,
+            lastUpdated: DateTime.now(),
+          );
+          notifyListeners();
+          completer.complete(true);
         },
       );
 
@@ -130,12 +113,7 @@ class TokenViewModel extends ChangeNotifier {
     try {
       if (_auth.currentUser == null) return false;
 
-      final success = await _purchaseService.buyTokenPackage(packageId);
-      if (success) {
-        await loadTokens();
-        return true;
-      }
-      return false;
+      return await _purchaseService.buyTokenPackage(packageId);
     } catch (e) {
       _errorMessage = e.toString();
       debugPrint('Purchase exception: $e');

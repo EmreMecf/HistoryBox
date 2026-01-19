@@ -1,5 +1,5 @@
-// lib/features/story/create/presentation/screens/story_create_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../core/core.dart';
@@ -7,11 +7,11 @@ import '../../../../../shared/widgets/animated_button.dart';
 import '../../../../../shared/widgets/custom_text_field.dart';
 import '../../../../../shared/widgets/loading_widget.dart';
 import '../../../../../shared/widgets/category_card.dart';
+import '../../../../../viewmodel/token_view_model.dart';
 import '../../../../auth/presentation/viewmodels/auth_view_model.dart';
 import '../viewmodels/story_create_view_model.dart';
 import '../widgets/age_group_card.dart';
 import '../widgets/story_preview_card.dart';
-import '../../../../../core/widgets/premium_app_bar.dart';
 import '../../../../../core/widgets/premium_header_card.dart';
 
 class StoryCreateScreen extends StatefulWidget {
@@ -42,37 +42,36 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
           viewModel.goBack();
         }
       },
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: PremiumAppBar(
-          title: const Text(
-            'Yeni Hikaye Oluştur',
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_rounded),
-            onPressed: () {
-              if (viewModel.currentStep != StoryCreationStep.selectCategory) {
-                viewModel.goBack();
-              } else {
-                if (context.canPop()) {
-                  context.pop();
-                } else {
-                  context.go('/');
-                }
-              }
-            },
-          ),
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light.copyWith(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: AppColors.premiumBackgroundGradient.last,
+          systemNavigationBarDividerColor: AppColors.premiumBackgroundGradient.last,
+          systemNavigationBarIconBrightness: Brightness.dark,
         ),
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: AppColors.premiumBackgroundGradient,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          extendBody: true,
+          extendBodyBehindAppBar: true,
+          body: AnimatedSoftBackground(
+            colors: AppColors.premiumBackgroundGradient,
+            backgroundColor: AppColors.premiumBackgroundGradient.last,
+            child: SafeArea(
+              top: true,
+              bottom: false,
+              child: Column(
+                children: [
+                  BackButtonHeader(
+                    title: 'Yeni Hikaye Oluştur',
+                    fallbackRoute: '/',
+                  ),
+                  Expanded(
+                    child: _buildBody(viewModel, authViewModel),
+                  ),
+                ],
+              ),
             ),
           ),
-          child: _buildBody(viewModel, authViewModel),
         ),
       ),
     );
@@ -97,7 +96,6 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
     }
   }
 
-  // 1. Kategori Seçimi
   Widget _buildCategorySelection(StoryCreateViewModel viewModel) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -159,7 +157,6 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
     );
   }
 
-  // 2. Yaş Grubu Seçimi
   Widget _buildAgeGroupSelection(StoryCreateViewModel viewModel) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -239,8 +236,9 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
     );
   }
 
-  // 3. Konu Girişi
   Widget _buildTopicInput(StoryCreateViewModel viewModel) {
+    final tokenViewModel = context.watch<TokenViewModel>();
+    final hasTokens = tokenViewModel.hasTokens;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppDimensions.paddingL),
       child: Column(
@@ -272,7 +270,6 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
           ),
           const SizedBox(height: AppDimensions.paddingL),
           
-          // Seçilen bilgiler
           Row(
             children: [
               _buildInfoChip(
@@ -291,7 +288,6 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
           
           const SizedBox(height: AppDimensions.paddingXL),
           
-          // Konu input
           CustomTextField(
             label: 'Hikaye Konusu',
             hint: 'Örn: Uzayda macera yaşayan bir astronot',
@@ -303,7 +299,6 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
           
           const SizedBox(height: AppDimensions.paddingL),
           
-          // Konu önerileri
           if (viewModel.topicSuggestions.isNotEmpty) ...[
             const Text(
               'Veya bu konulardan birini seç:',
@@ -348,11 +343,29 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
             const SizedBox(height: AppDimensions.paddingXL),
           ],
           
-          // Oluştur butonu
           AnimatedButton(
             text: 'Hikaye Oluştur',
             onPressed: viewModel.topic != null && viewModel.topic!.isNotEmpty
-                ? () => viewModel.generateStory()
+                ? () async {
+                    if (!hasTokens) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Token bitti. Hikaye oluşturamazsın.'),
+                        ),
+                      );
+                      return;
+                    }
+                    final used = await tokenViewModel.useToken();
+                    if (!used && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Token bitti. Hikaye oluşturamazsın.'),
+                        ),
+                      );
+                      return;
+                    }
+                    await viewModel.generateStory();
+                  }
                 : () {},
             icon: Icons.auto_awesome,
             gradientColors: AppColors.primaryGradient,
@@ -387,7 +400,6 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
     );
   }
 
-  // 4. Önizleme
   Widget _buildPreview(StoryCreateViewModel viewModel, AuthViewModel authViewModel) {
     return StoryPreviewCard(
       title: viewModel.generatedTitle ?? '',
@@ -419,7 +431,6 @@ class _StoryCreateScreenState extends State<StoryCreateScreen> {
     );
   }
 
-  // 5. Tamamlandı
   Widget _buildComplete() {
     return Center(
       child: Padding(

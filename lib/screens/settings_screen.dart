@@ -6,8 +6,9 @@ import 'package:historybox/viewmodel/language_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../core/thema/app_colors.dart';
-import '../core/widgets/premium_app_bar.dart';
+import '../core/widgets/back_button_header.dart';
 import '../core/widgets/premium_header_card.dart';
+import '../core/widgets/animated_soft_background.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -21,23 +22,23 @@ class SettingsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: PremiumAppBar(
-        title: Text(
-          l10n.setting_screen_app_bar_label,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: AppColors.premiumBackgroundGradient,
-          ),
-        ),
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
+      extendBody: true,
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: AnimatedSoftBackground(
+          colors: AppColors.premiumBackgroundGradient,
+          backgroundColor: theme.colorScheme.surface,
+          child: Column(
+            children: [
+              BackButtonHeader(
+                title: l10n.setting_screen_app_bar_label,
+                fallbackRoute: '/',
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
             PremiumHeaderCard(
               icon: Icons.tune_rounded,
               title: l10n.setting_screen_app_bar_label,
@@ -131,7 +132,11 @@ class SettingsScreen extends StatelessWidget {
               ),
             ],
           ),
-          ],
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

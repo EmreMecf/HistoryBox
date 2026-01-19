@@ -8,7 +8,7 @@ import '../../../../../shared/widgets/empty_state.dart';
 import '../../../../../shared/widgets/animated_button.dart';
 import '../../../../../services/injector.dart';
 import '../../../../../services/models/network/result.dart';
-import '../../../../../core/widgets/premium_app_bar.dart';
+import '../../../../../services/advert/ad_service.dart';
 
 class StoryDetailScreen extends StatefulWidget {
   final String storyId;
@@ -27,11 +27,21 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
   StoryModel? _story;
   bool _isLoading = true;
   String? _errorMessage;
+  bool _didShowInterstitial = false;
 
   @override
   void initState() {
     super.initState();
     _loadStory();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showInterstitialOnce();
+    });
+  }
+
+  Future<void> _showInterstitialOnce() async {
+    if (_didShowInterstitial) return;
+    _didShowInterstitial = true;
+    await AdService().showInterstitialAd();
   }
 
   Future<void> _loadStory() async {
@@ -58,25 +68,23 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Hikaye'),
+      return const Scaffold(
+        body: SafeArea(
+          child: LoadingWidget(message: 'Hikaye yükleniyor...'),
         ),
-        body: const LoadingWidget(message: 'Hikaye yükleniyor...'),
       );
     }
 
     if (_errorMessage != null || _story == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Hata'),
-        ),
-        body: EmptyState(
-          emoji: AppAssets.cloudEmoji,
-          title: 'Bir Hata Oluştu',
-          message: _errorMessage ?? 'Hikaye bulunamadı',
-          buttonText: 'Tekrar Dene',
-          onButtonPressed: _loadStory,
+        body: SafeArea(
+          child: EmptyState(
+            emoji: AppAssets.cloudEmoji,
+            title: 'Bir Hata Oluştu',
+            message: _errorMessage ?? 'Hikaye bulunamadı',
+            buttonText: 'Tekrar Dene',
+            onButtonPressed: _loadStory,
+          ),
         ),
       );
     }
@@ -86,33 +94,23 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: AppColors.premiumBackgroundGradient,
-          ),
-        ),
-        child: CustomScrollView(
-          slivers: [
-          // App Bar
-          SliverAppBar(
-            pinned: true,
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            foregroundColor: Colors.white,
-            title: Text(
-              _story!.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            flexibleSpace: const PremiumAppBarBackground(),
-          ),
-
-          // Content
-          SliverPadding(
+      extendBody: true,
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: AnimatedSoftBackground(
+          colors: AppColors.premiumBackgroundGradient,
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: BackButtonHeader(
+                  title: _story!.title,
+                  fallbackRoute: '/history',
+                ),
+              ),
+              // Content
+              SliverPadding(
             padding: const EdgeInsets.all(AppDimensions.paddingL),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
@@ -195,6 +193,10 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
 
                 const SizedBox(height: AppDimensions.paddingXL),
 
+                const BannerAdSlot(),
+
+                const SizedBox(height: AppDimensions.paddingXL),
+
                 // Content
                 Container(
                   padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -224,7 +226,8 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
               ]),
             ),
           ),
-          ],
+            ],
+          ),
         ),
       ),
       

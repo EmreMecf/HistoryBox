@@ -1,7 +1,7 @@
 // lib/screens/home/home_screen.dart
 import 'package:flutter/material.dart';
 import '../core/thema/index.dart';
-import '../widgets/custom_app_bar.dart';
+import '../core/widgets/back_button_header.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,9 +14,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'HistoryBox',
-      ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
@@ -24,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const BackButtonHeader(title: 'HistoryBox'),
               _buildWelcomeCard(),
               const SizedBox(height: AppDimensions.paddingL),
               _buildCategorySection(),

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import 'core/translations/l10n/app_localizations.dart';
 // Core
 import 'core/thema/app_theme.dart';
 import 'core/constants/app_constants.dart';
+import 'core/thema/app_colors.dart';
 import 'core/configs/historybox_cache_manager.dart';
 import 'firebase_options.dart';
 
@@ -46,7 +48,18 @@ Future<void> main() async {
 
   // Initialize ads
   final adService = AdService();
-  await adService.initialize(enableAds: !kDebugMode);
+  await adService.initialize(enableAds: true);
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarDividerColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
 
   runApp(
     MultiProvider(
@@ -81,6 +94,9 @@ Future<void> main() async {
   );
 }
 
+const bool _showPerfOverlay =
+    bool.fromEnvironment('SHOW_PERF_OVERLAY', defaultValue: false);
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -91,6 +107,9 @@ class MyApp extends StatelessWidget {
         return MaterialApp.router(
           title: AppConstants.appName,
           debugShowCheckedModeBanner: false,
+          showPerformanceOverlay: kDebugMode && _showPerfOverlay,
+          checkerboardOffscreenLayers: kDebugMode && _showPerfOverlay,
+          checkerboardRasterCacheImages: kDebugMode && _showPerfOverlay,
           routerConfig: injector<NavigationService>().router,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,

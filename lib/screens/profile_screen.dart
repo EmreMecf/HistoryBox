@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:historybox/viewmodel/profile_view_model.dart';
 import 'package:historybox/viewmodel/sign_out_view_model.dart';
 import 'package:provider/provider.dart';
 import '../core/translations/l10n/app_localizations.dart';
 import '../core/thema/app_colors.dart';
-import '../core/widgets/premium_app_bar.dart';
+import '../core/widgets/back_button_header.dart';
 import '../core/widgets/premium_header_card.dart';
+import '../core/widgets/animated_soft_background.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -21,23 +23,29 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: PremiumAppBar(
-        title: Text(
-          l10n.profile_screen_app_bar_label,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark.copyWith(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
         ),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: AppColors.premiumBackgroundGradient,
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
+        child: AnimatedSoftBackground(
+          colors: AppColors.premiumBackgroundGradient,
+          backgroundColor: theme.colorScheme.surface,
+          child: SafeArea(
+            top: true,
+            bottom: false,
+            child: Column(
+              children: [
+                BackButtonHeader(
+                  title: l10n.profile_screen_app_bar_label,
+                  fallbackRoute: '/',
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
             const SizedBox(height: 20),
             // Profile Header
             Hero(
@@ -198,7 +206,12 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

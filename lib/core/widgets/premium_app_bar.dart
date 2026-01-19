@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import '../thema/app_colors.dart';
 
@@ -53,33 +51,17 @@ class PremiumAppBarBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: AppColors.premiumAppBarGradient,
-              ),
-            ),
-          ),
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-            child: Container(
-              color: Colors.white.withOpacity(0.02),
-            ),
-          ),
-          if (showDivider)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                height: 1,
-                color: Colors.white.withOpacity(0.12),
-              ),
-            ),
-        ],
+    final theme = Theme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withOpacity(0.92),
+        border: showDivider
+            ? Border(
+                bottom: BorderSide(
+                  color: theme.colorScheme.onSurface.withOpacity(0.08),
+                ),
+              )
+            : null,
       ),
     );
   }

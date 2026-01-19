@@ -11,7 +11,6 @@ import '../viewmodels/home_view_model.dart';
 import '../widgets/animated_greeting_card.dart';
 import '../widgets/category_section.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/widgets/premium_app_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,20 +51,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: AppColors.premiumBackgroundGradient,
-          ),
-        ),
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            // App Bar
-            _buildAppBar(context, authViewModel),
-            
+      extendBody: true,
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: AnimatedSoftBackground(
+          colors: AppColors.premiumBackgroundGradient,
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+            SliverToBoxAdapter(
+              child: BackButtonHeader(
+                title: AppConstants.appName,
+                fallbackRoute: '/',
+              ),
+            ),
             // Content
             SliverPadding(
               padding: const EdgeInsets.all(AppDimensions.paddingL),
@@ -81,6 +82,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   
                   // Kategoriler
                   const CategorySection(),
+                  
+                  const SizedBox(height: AppDimensions.paddingXL),
+
+                  const BannerAdSlot(),
                   
                   const SizedBox(height: AppDimensions.paddingXL),
                   
@@ -109,7 +114,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ]),
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
       
@@ -140,47 +146,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           );
         },
       ),
-    );
-  }
-
-  Widget _buildAppBar(BuildContext context, AuthViewModel authViewModel) {
-    return SliverAppBar(
-      expandedHeight: 120,
-      floating: false,
-      pinned: true,
-      backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      foregroundColor: Colors.white,
-      title: const Text(
-        AppConstants.appName,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-      ),
-      flexibleSpace: const PremiumAppBarBackground(),
-      actions: [
-        // Profil
-        IconButton(
-          icon: CircleAvatar(
-            backgroundColor: Colors.white.withOpacity(0.2),
-            child: authViewModel.currentUser?.photoURL != null
-                ? ClipOval(
-                    child: Image.network(
-                      authViewModel.currentUser!.photoURL!,
-                      width: 32,
-                      height: 32,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : Text(
-                    AppAssets.crownEmoji,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-          ),
-          onPressed: () {
-            context.go('/profile');
-          },
-        ),
-        const SizedBox(width: AppDimensions.paddingS),
-      ],
     );
   }
 
