@@ -1,0 +1,13 @@
+Analyzing story_detail_screen.dart...
+
+warning • Unused import: '../../../../../shared/widgets/animated_button.dart' • lib/features/story/detail/presentation/screens/story_detail_screen.dart:8:8 • unused_import
+warning • Unnecessary cast • lib/features/story/detail/presentation/screens/story_detail_screen.dart:57:19 • unnecessary_cast
+warning • Unnecessary cast • lib/features/story/detail/presentation/screens/story_detail_screen.dart:62:26 • unnecessary_cast
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/story/detail/presentation/screens/story_detail_screen.dart:126:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/story/detail/presentation/screens/story_detail_screen.dart:138:48 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/story/detail/presentation/screens/story_detail_screen.dart:187:31 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/story/detail/presentation/screens/story_detail_screen.dart:209:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/story/detail/presentation/screens/story_detail_screen.dart:258:22 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/story/detail/presentation/screens/story_detail_screen.dart:260:41 • deprecated_member_use
+
+9 issues found. (ran in 1.9s)
