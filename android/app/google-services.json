@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "665813264890",
+    "project_id": "historybox-1f893",
+    "storage_bucket": "historybox-1f893.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:665813264890:android:a1a1a3b9443d11bd91dc43",
+        "android_client_info": {
+          "package_name": "com.emrec.historybox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "665813264890-1f4hkklmmsp5q7mim1iskjri1udu5fod.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.emrec.historybox",
+            "certificate_hash": "7c45293fd045836ffce53a2ee785c2824aa5cf0f"
+          }
+        },
+        {
+          "client_id": "665813264890-0fpr580v3p4q7o00b6opp9e79cp4jfu5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABBiivBofNEy2pgDo8TmLokcHkEaGUQik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "665813264890-0fpr580v3p4q7o00b6opp9e79cp4jfu5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "665813264890-0f439d9j9rv0q3afqmvsatefn2snt61m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.emrec.historybox"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
