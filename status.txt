@@ -1,0 +1,10 @@
+M  lib/core/translations/l10n/app_en.arb
+M  lib/core/translations/l10n/app_localizations.dart
+M  lib/core/translations/l10n/app_localizations_en.dart
+M  lib/core/translations/l10n/app_localizations_tr.dart
+M  lib/core/translations/l10n/app_tr.arb
+M  lib/features/story/detail/presentation/screens/story_detail_screen.dart
+M  lib/shared/widgets/story_card.dart
+M  pubspec.lock
+A  test/story_card_test.dart
+?? status.txt
