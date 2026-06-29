@@ -1,0 +1,135 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:just_audio_background/just_audio_background.dart';
+import 'package:provider/provider.dart';
+import 'core/translations/l10n/app_localizations.dart';
+
+// Core
+import 'core/thema/app_theme.dart';
+import 'core/constants/app_constants.dart';
+import 'firebase_options.dart';
+
+// Services & DI
+import 'services/advert/ad_service.dart';
+import 'services/injector.dart';
+import 'services/navigation/navigation.dart';
+
+// ViewModels
+import 'viewmodel/thema_view_model.dart';
+import 'viewmodel/token_view_model.dart';
+import 'viewmodel/profile_view_model.dart';
+import 'viewmodel/sign_out_view_model.dart';
+import 'viewmodel/language_view_model.dart';
+import 'features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'features/home/presentation/viewmodels/home_view_model.dart';
+import 'features/story/create/presentation/viewmodels/story_create_view_model.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
+  await dotenv.load();
+
+  // Firebase initialize
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Arka planda ses çalma (ninni/meditasyon/doğa sesleri + bildirim)
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.emrec.historybox.audio',
+    androidNotificationChannelName: 'HistoryBox',
+    androidNotificationOngoing: true,
+  );
+
+  // Setup dependency injection
+  await initInjector();
+
+  // Initialize ads
+  final adService = AdService();
+  await adService.initialize(enableAds: true);
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarDividerColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => ThemeViewModel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LanguageViewModel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => injector<TokenViewModel>()..loadTokens(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ProfileViewModel()..loadUserData(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => injector<SignOutViewModel>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => injector<AuthViewModel>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => injector<HomeViewModel>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => injector<StoryCreateViewModel>(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+const bool _showPerfOverlay =
+    bool.fromEnvironment('SHOW_PERF_OVERLAY', defaultValue: false);
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer2<ThemeViewModel, LanguageViewModel>(
+      builder: (context, themeViewModel, languageViewModel, child) {
+        return MaterialApp.router(
+          title: AppConstants.appName,
+          debugShowCheckedModeBanner: false,
+          showPerformanceOverlay: kDebugMode && _showPerfOverlay,
+          checkerboardOffscreenLayers: kDebugMode && _showPerfOverlay,
+          checkerboardRasterCacheImages: kDebugMode && _showPerfOverlay,
+          routerConfig: injector<NavigationService>().router,
+          theme: AppTheme.light(themeViewModel.palette),
+          darkTheme: AppTheme.dark(themeViewModel.palette),
+          themeMode: themeViewModel.themeMode,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en', ''),
+            Locale('tr', ''),
+          ],
+          locale: languageViewModel.currentLocale,
+        );
+      },
+    );
+  }
+}
