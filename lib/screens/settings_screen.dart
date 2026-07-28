@@ -81,17 +81,23 @@ class SettingsScreen extends StatelessWidget {
                   color: theme.colorScheme.primary,
                 ),
                 title: Text(l10n.settings_language_label),
-                subtitle: Text(
-                  languageViewModel.currentLocale.languageCode == 'tr'
-                      ? 'Türkçe'
-                      : 'English',
-                ),
-                trailing: Switch(
-                  value: languageViewModel.currentLocale.languageCode == 'en',
-                  onChanged: (value) {
-                    languageViewModel.changeLanguage(
-                      value ? const Locale('en', '') : const Locale('tr', ''),
-                    );
+                trailing: DropdownButton<String>(
+                  value: LanguageViewModel.supported
+                          .containsKey(languageViewModel.currentLocale.languageCode)
+                      ? languageViewModel.currentLocale.languageCode
+                      : 'en',
+                  underline: const SizedBox.shrink(),
+                  borderRadius: BorderRadius.circular(12),
+                  items: LanguageViewModel.supported.entries
+                      .map((e) => DropdownMenuItem(
+                            value: e.key,
+                            child: Text(e.value),
+                          ))
+                      .toList(),
+                  onChanged: (code) {
+                    if (code != null) {
+                      languageViewModel.changeLanguage(Locale(code, ''));
+                    }
                   },
                 ),
               ),
@@ -135,7 +141,15 @@ class SettingsScreen extends StatelessWidget {
                     context: context,
                     applicationName: 'HistoryBox',
                     applicationVersion: '1.0.0',
-                    applicationIcon: const Icon(Icons.auto_stories, size: 48),
+                    applicationIcon: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        'assets/icon/app_icon.png',
+                        width: 52,
+                        height: 52,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                     children: [
                       const Text(
                         'AI-powered story creation app for children.',

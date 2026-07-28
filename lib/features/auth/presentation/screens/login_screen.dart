@@ -111,39 +111,24 @@ class _LoginScreenState extends State<LoginScreen>
       children: [
         // Logo container
         Container(
-          width: 120,
-          height: 120,
+          width: 128,
+          height: 128,
           decoration: BoxDecoration(
-            color: AppColors.surfaceLight,
-            shape: BoxShape.circle,
+            borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 24,
-                offset: const Offset(0, 12),
+                color: Colors.black.withOpacity(0.28),
+                blurRadius: 30,
+                offset: const Offset(0, 14),
               ),
             ],
           ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Arka plan deseni
-              Positioned(
-                top: 24,
-                child: Opacity(
-                  opacity: 0.08,
-                  child: Text(
-                    AppAssets.bookEmoji,
-                    style: const TextStyle(fontSize: 44),
-                  ),
-                ),
-              ),
-              // Ana ikon
-              Text(
-                AppAssets.bookEmoji,
-                style: const TextStyle(fontSize: 64),
-              ),
-            ],
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: Image.asset(
+              'assets/icon/app_icon.png',
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         const SizedBox(height: AppDimensions.paddingXL),

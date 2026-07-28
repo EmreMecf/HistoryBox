@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +10,7 @@ import 'core/translations/l10n/app_localizations.dart';
 // Core
 import 'core/thema/app_theme.dart';
 import 'core/constants/app_constants.dart';
+import 'core/config/app_config.dart';
 import 'firebase_options.dart';
 
 // Services & DI
@@ -31,13 +31,14 @@ import 'features/story/create/presentation/viewmodels/story_create_view_model.da
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
-  await dotenv.load();
-
   // Firebase initialize
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // API anahtarlarini Firebase Remote Config'ten (ve varsa yerel .env'den) yukle.
+  // Injector'dan ONCE cagrilmali; cunku servisler anahtarlari buradan okur.
+  await AppConfig.instance.init();
 
   // Arka planda ses çalma (ninni/meditasyon/doğa sesleri + bildirim)
   await JustAudioBackground.init(
@@ -123,10 +124,7 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
-            Locale('en', ''),
-            Locale('tr', ''),
-          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           locale: languageViewModel.currentLocale,
         );
       },

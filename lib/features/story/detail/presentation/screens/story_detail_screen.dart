@@ -17,7 +17,6 @@ import '../../../../../shared/widgets/animated_button.dart';
 import '../../../../../shared/widgets/story_narration_bar.dart';
 import '../../../video/story_video_screen.dart';
 import '../../../../community/presentation/widgets/social_action_bar.dart';
-import '../../../../print/presentation/screens/print_book_screen.dart';
 import '../../../../../services/injector.dart';
 import '../../../../../services/models/network/result.dart';
 import '../../../../../services/advert/ad_service.dart';
@@ -359,28 +358,6 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => StoryVideoScreen(
-                          title: _story!.title,
-                          content: _story!.content,
-                          category: _story!.category,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-
-                const SizedBox(height: AppDimensions.paddingM),
-
-                // Fiziksel kitap baskısı
-                AnimatedButton(
-                  text: 'Bu masalı kitap olarak bastır',
-                  icon: Icons.menu_book_rounded,
-                  backgroundColor: AppColors.gold,
-                  width: double.infinity,
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => PrintBookScreen(
-                          storyId: _story!.id,
                           title: _story!.title,
                           content: _story!.content,
                           category: _story!.category,

@@ -27,7 +27,6 @@ import '../shared/services/ai_story_service.dart';
 import '../shared/services/community_service.dart';
 import '../shared/services/child_profile_service.dart';
 import '../shared/services/parental_controls_service.dart';
-import '../shared/services/print_order_service.dart';
 import '../features/story/video/story_video_service.dart';
 
 // ViewModels
@@ -120,7 +119,6 @@ Future<void> initInjector() async {
   injector.registerLazySingleton(() => ParentalControlsService());
   injector.registerLazySingleton(() => ElevenLabsVoiceService());
   injector.registerLazySingleton(() => VoiceProfileService());
-  injector.registerLazySingleton(() => PrintOrderService());
   injector.registerLazySingleton(() => StoryImageService());
 
   // Navigation

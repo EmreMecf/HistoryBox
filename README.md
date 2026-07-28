@@ -49,7 +49,6 @@ eden ninni/meditasyonlarla huzurlu bir uykuya dalar.
 
 ### 🪙 Diğer
 - Token ekonomisi (ücretsiz kullanım), ödüllü reklam, IAP token paketleri
-- Fiziksel kitap baskısı sipariş akışı
 - Google/Misafir girişi, Aydınlık/Gece teması, TR/EN arayüz
 
 ---

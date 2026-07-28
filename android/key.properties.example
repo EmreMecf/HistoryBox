@@ -1,0 +1,12 @@
+# Release imzalama anahtari ornek dosyasi.
+# 1) Bir keystore olustur (terminalde):
+#    keytool -genkey -v -keystore %USERPROFILE%\historybox-release.jks \
+#      -keyalg RSA -keysize 2048 -validity 10000 -alias historybox
+# 2) Bu dosyayi "key.properties" olarak kopyala ve degerleri doldur.
+# 3) key.properties dosyasi git'e EKLENMEZ (gizli bilgi icerir).
+
+storePassword=BURAYA_KEYSTORE_SIFRESI
+keyPassword=BURAYA_ANAHTAR_SIFRESI
+keyAlias=historybox
+# Keystore dosyasinin tam yolu (ornek):
+storeFile=C:/Users/muhas/historybox-release.jks

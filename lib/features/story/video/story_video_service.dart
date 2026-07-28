@@ -77,21 +77,25 @@ class StoryVideoService {
     final categoryColor =
         AppColors.categoryColors[category] ?? AppColors.brandIndigo;
 
+    // AI illüstrasyonları TUTARLI KARAKTERLE önce toplu üret (referans zinciri)
+    List<String?> sceneImages = List.filled(scenes.length, null);
+    if (useAiImages && _imageGen.isConfigured) {
+      sceneImages = await _imageGen.generateConsistentScenes(
+        scenes: scenes,
+        storyText: content,
+        onProgress: (done, total) => onProgress?.call(
+          'AI illüstrasyon çiziliyor ($done/$total) — tutarlı karakter',
+          0.2 + 0.45 * (done / total),
+        ),
+      );
+    }
+
     final framePaths = <String>[];
     for (var i = 0; i < scenes.length; i++) {
-      final useAi = useAiImages && _imageGen.isConfigured;
       onProgress?.call(
-        useAi
-            ? 'AI illüstrasyon çiziliyor (${i + 1}/${scenes.length})'
-            : 'Sahne çiziliyor (${i + 1}/${scenes.length})',
-        0.2 + 0.5 * (i / scenes.length),
+        'Sahne hazırlanıyor (${i + 1}/${scenes.length})',
+        0.68 + 0.08 * (i / scenes.length),
       );
-
-      String? bgImagePath;
-      if (useAi) {
-        bgImagePath = await _imageGen.generateSceneImage(scenes[i], index: i);
-      }
-
       final bytes = await _renderScene(
         title: title,
         sceneText: scenes[i],
@@ -99,7 +103,7 @@ class StoryVideoService {
         total: scenes.length,
         color: categoryColor,
         watermark: addWatermark,
-        backgroundImagePath: bgImagePath,
+        backgroundImagePath: sceneImages[i],
       );
       final file = File('${tmp.path}/frame_$i.png');
       await file.writeAsBytes(bytes, flush: true);
@@ -289,21 +293,9 @@ class StoryVideoService {
     final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, w, h));
 
     if (backgroundImagePath != null) {
-      // AI illüstrasyon arka planı + okunabilirlik için karartma
+      // AI illüstrasyon arka planı (kareyi doldurur, canlı kalır).
+      // Metin okunabilirliği için karartma aşağıdaki alt bantla yapılır.
       await _drawCoverImage(canvas, backgroundImagePath, w, h);
-      canvas.drawRect(
-        Rect.fromLTWH(0, 0, w, h),
-        Paint()
-          ..shader = ui.Gradient.linear(
-            Offset(0, h * 0.35),
-            Offset(0, h),
-            [Colors.transparent, const Color(0xCC0B0824)],
-          ),
-      );
-      canvas.drawRect(
-        Rect.fromLTWH(0, 0, w, h),
-        Paint()..color = Colors.black.withValues(alpha: 0.22),
-      );
     } else {
       // Temalı (ücretsiz) arka plan: gece + kategori renkli gradyan
       final bgTop = Color.lerp(color, const Color(0xFF1A1145), 0.45)!;
@@ -339,37 +331,57 @@ class StoryVideoService {
       }
     }
 
-    // Başlık (üst)
-    _paintText(
-      canvas,
-      title.toUpperCase(),
-      top: 90,
-      maxWidth: w - 140,
-      color: const Color(0xFFFFD68A),
-      fontSize: 30,
-      weight: FontWeight.w700,
-      maxLines: 2,
-      letterSpacing: 1.5,
-    );
+    // ===== MASAL KİTABI DÜZENİ: görsel üstte, yazı (alt yazı) altta =====
 
-    // Sahne metni (ortada) — uzunluğa göre font ölçeği
-    final fontSize = sceneText.length > 220
+    // Sayfa yazısı (alt yazı) — uzunluğa göre font ölçeği
+    final len = sceneText.length;
+    final fontSize = len > 260
         ? 34.0
-        : sceneText.length > 120
-            ? 40.0
-            : 46.0;
-    final tp = _layout(
+        : len > 150
+            ? 38.0
+            : 44.0;
+    final subtitle = _layout(
       sceneText,
-      maxWidth: w - 130,
+      maxWidth: w - 120,
       color: Colors.white,
       fontSize: fontSize,
       weight: FontWeight.w600,
-      maxLines: 12,
+      maxLines: 7,
     );
-    tp.paint(canvas, Offset((w - tp.width) / 2, (h - tp.height) / 2));
+    final textTop = h - subtitle.height - 108;
 
-    // Alt: sahne göstergesi (noktalar) + filigran
-    final dotY = h - 110;
+    // Metnin altındaki güçlü karartma bandı (okunabilirlik)
+    final bandTop = (textTop - 44).clamp(h * 0.42, h).toDouble();
+    canvas.drawRect(
+      Rect.fromLTWH(0, bandTop, w, h - bandTop),
+      Paint()
+        ..shader = ui.Gradient.linear(
+          Offset(0, bandTop),
+          Offset(0, h),
+          [Colors.transparent, const Color(0xF00B0824)],
+        ),
+    );
+
+    // Sayfa yazısını çiz
+    subtitle.paint(canvas, Offset((w - subtitle.width) / 2, textTop));
+
+    // Başlık — yalnızca ilk sayfada (kapak gibi)
+    if (index == 0) {
+      _paintText(
+        canvas,
+        title,
+        top: 70,
+        maxWidth: w - 120,
+        color: const Color(0xFFFFD68A),
+        fontSize: 34,
+        weight: FontWeight.w700,
+        maxLines: 2,
+        letterSpacing: 0.5,
+      );
+    }
+
+    // Sahne göstergesi (noktalar) — en altta
+    final dotY = h - 54;
     const dotGap = 22.0;
     final dotsWidth = (total - 1) * dotGap;
     for (var i = 0; i < total; i++) {
@@ -378,22 +390,22 @@ class StoryVideoService {
         Offset(w / 2 - dotsWidth / 2 + i * dotGap, dotY),
         active ? 6 : 4,
         Paint()
-          ..color = active ? color : Colors.white.withValues(alpha: 0.35),
+          ..color =
+              active ? Colors.white : Colors.white.withValues(alpha: 0.35),
       );
     }
-    // Filigran — yalnızca ücretsiz kullanıcılarda
+
+    // Filigran (yalnızca ücretsiz) — üst sağ köşe, küçük
     if (watermark) {
-      _paintText(
-        canvas,
-        'HistoryBox',
-        top: h - 70,
+      final wm = _layout(
+        '🌙 HistoryBox',
         maxWidth: w,
-        color: Colors.white.withValues(alpha: 0.55),
-        fontSize: 24,
+        color: Colors.white.withValues(alpha: 0.6),
+        fontSize: 22,
         weight: FontWeight.w600,
         maxLines: 1,
-        letterSpacing: 2,
       );
+      wm.paint(canvas, Offset(w - wm.width - 40, 66));
     }
 
     final picture = recorder.endRecording();

@@ -11,6 +11,10 @@ class GeminiApiClient {
   final Dio _dio;
   GeminiApiClient(this._dio);
 
+  // Maliyet koruması: bir masal en fazla bu kadar çıktı token'ı üretir
+  // (~1500 kelime; 15 dakikalık masala fazlasıyla yeter, kaçak maliyeti önler).
+  static const int maxOutputTokens = 2048;
+
   String get _model => dotenv.maybeGet('GEMINI_MODEL') ?? 'gemini-2.0-flash';
 
   /// Metinden metin üretir.
@@ -26,6 +30,7 @@ class GeminiApiClient {
             ],
           },
         ],
+        'generationConfig': {'maxOutputTokens': maxOutputTokens},
       },
     );
     return _extractText(response.data);
@@ -50,6 +55,7 @@ class GeminiApiClient {
             ],
           },
         ],
+        'generationConfig': {'maxOutputTokens': maxOutputTokens},
       },
     );
     return _extractText(response.data);

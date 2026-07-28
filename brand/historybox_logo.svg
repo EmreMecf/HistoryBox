@@ -1,0 +1,45 @@
+<svg width="680" height="720" viewBox="0 0 680 720" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>HistoryBox logo</title>
+<desc>Geometric vector logo: isometric purple light box with gold stripe, open golden book, turquoise energy column with gold moon/castle/dragon silhouettes and sparkles, on a paper card.</desc>
+<defs>
+<linearGradient id="paper" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6F3EA"/><stop offset="1" stop-color="#E9E4D6"/></linearGradient>
+<linearGradient id="boxFront" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B6BFF"/><stop offset="1" stop-color="#4B3AB0"/></linearGradient>
+<linearGradient id="boxSide" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5A47C4"/><stop offset="1" stop-color="#2E2170"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE7A6"/><stop offset="0.5" stop-color="#FFC24D"/><stop offset="1" stop-color="#E29417"/></linearGradient>
+<linearGradient id="page" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6DC"/><stop offset="1" stop-color="#FFDC93"/></linearGradient>
+<linearGradient id="teal" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#1C7E93"/><stop offset="0.5" stop-color="#2BB9C0"/><stop offset="1" stop-color="#8CF3E0"/></linearGradient>
+<radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#5FE8D6" stop-opacity="0.55"/><stop offset="1" stop-color="#5FE8D6" stop-opacity="0"/></radialGradient>
+</defs>
+<rect x="160" y="36" width="360" height="648" rx="30" fill="url(#paper)" stroke="#DBD5C2" stroke-width="2"/>
+<ellipse cx="340" cy="300" rx="150" ry="180" fill="url(#glow)"/>
+<path d="M340 400 C 268 342 280 224 318 158 C 329 140 351 140 362 158 C 400 224 412 342 340 400 Z" fill="url(#teal)"/>
+<path d="M340 392 C 300 350 306 262 330 196" fill="none" stroke="#BFF7EC" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+<path d="M344 384 C 380 340 378 260 356 200" fill="none" stroke="#158193" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+<path d="M332 196 A15 15 0 1 0 332 224 A11 11 0 1 1 332 196 Z" fill="url(#gold)"/>
+<path d="M326 306 L326 272 L330 272 L330 266 L336 266 L336 272 L340 272 L340 266 L346 266 L346 272 L350 272 L350 266 L356 266 L356 272 L360 272 L360 306 Z" fill="url(#gold)"/>
+<rect x="338" y="286" width="10" height="18" rx="5" fill="#1C7E93"/>
+<path d="M312 356 Q300 346 308 334 Q300 330 306 322 L320 328 Q326 318 338 322 L336 330 L352 326 Q366 328 366 340 L354 340 Q358 350 348 354 L340 348 Q328 360 312 356 Z" fill="url(#gold)"/>
+<path d="M356 330 L368 322 L362 334 Z" fill="url(#gold)"/>
+<circle cx="322" cy="336" r="2.4" fill="#1C7E93"/>
+<g fill="#FFD98A">
+<path d="M250 232 L253 240 L261 243 L253 246 L250 254 L247 246 L239 243 L247 240 Z"/>
+<path d="M432 262 L435 270 L443 273 L435 276 L432 284 L429 276 L421 273 L429 270 Z"/>
+<path d="M300 150 L302 156 L308 158 L302 160 L300 166 L298 160 L292 158 L298 156 Z"/>
+<path d="M404 176 L406 182 L412 184 L406 186 L404 192 L402 186 L396 184 L402 182 Z"/>
+<path d="M262 320 L264 326 L270 328 L264 330 L262 336 L260 330 L254 328 L260 326 Z"/>
+<path d="M420 336 L422 342 L428 344 L422 346 L420 352 L418 346 L412 344 L418 342 Z"/>
+<path d="M340 110 L343 119 L352 122 L343 125 L340 134 L337 125 L328 122 L337 119 Z"/>
+</g>
+<path d="M270 434 L340 400 L410 434 L340 470 Z" fill="#1B1245"/>
+<path d="M270 434 L340 470 L340 556 L270 520 Z" fill="url(#boxSide)"/>
+<path d="M410 434 L340 470 L340 556 L410 520 Z" fill="url(#boxFront)"/>
+<path d="M330 470 L350 470 L350 552 L340 558 L330 552 Z" fill="url(#gold)"/>
+<path d="M284 428 L340 406 L340 470 L284 452 Z" fill="#C98A2E"/>
+<path d="M396 428 L340 406 L340 470 L396 452 Z" fill="#B87A24"/>
+<path d="M340 404 L286 388 Q289 378 297 375 L340 390 Z" fill="url(#page)"/>
+<path d="M340 404 L394 388 Q391 378 383 375 L340 390 Z" fill="url(#page)"/>
+<path d="M300 386 L332 396 M300 393 L332 402" stroke="#E7B85E" stroke-width="1.4" opacity="0.6"/>
+<path d="M380 386 L348 396 M380 393 L348 402" stroke="#E7B85E" stroke-width="1.4" opacity="0.6"/>
+<text x="340" y="612" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="700" fill="#2E2170" letter-spacing="0.5">History<tspan fill="#E29417">Box</tspan></text>
+<text x="340" y="640" text-anchor="middle" font-family="Verdana, sans-serif" font-size="14" fill="#8A7F63" letter-spacing="3">AI MASAL DÜNYASI</text>
+</svg>

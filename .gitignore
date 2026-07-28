@@ -3,6 +3,11 @@
 .env.*
 !.env.example
 
+# Android release signing (keystore + passwords)
+android/key.properties
+*.jks
+*.keystore
+
 # Miscellaneous
 *.class
 *.log

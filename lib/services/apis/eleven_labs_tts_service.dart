@@ -25,6 +25,10 @@ class ElevenLabsTtsService {
   // Aynı metni tekrar seslendirirken API'yi yeniden çağırmamak için önbellek.
   final Map<String, String> _cache = {};
 
+  // Maliyet koruması: ElevenLabs karakter başına ücretlendirir. Tek seslendirme
+  // en fazla bu kadar karakter gönderir (cümle sonunda kesilir).
+  static const int maxNarrationChars = 2500;
+
   String get _apiKey => dotenv.maybeGet('ELEVENLABS_API_KEY') ?? '';
 
   /// API anahtarı tanımlı mı? (placeholder ise devre dışı sayılır)
@@ -42,6 +46,15 @@ class ElevenLabsTtsService {
     final voiceId = voiceIdOverride ??
         dotenv.maybeGet('ELEVENLABS_VOICE_ID') ??
         'EXAVITQu4vr4xnSDxMaL';
+
+    // Maliyet koruması: çok uzun metni cümle sonunda kısalt.
+    if (text.length > maxNarrationChars) {
+      final slice = text.substring(0, maxNarrationChars);
+      final lastStop = slice.lastIndexOf(RegExp(r'[.!?]'));
+      text = lastStop > maxNarrationChars * 0.5
+          ? slice.substring(0, lastStop + 1)
+          : slice;
+    }
 
     final cacheKey = '${calm ? 'c' : 'n'}_${voiceId.hashCode}_${text.hashCode}';
     final cached = _cache[cacheKey];

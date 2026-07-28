@@ -2,9 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguageViewModel extends ChangeNotifier {
-  Locale _currentLocale = const Locale('tr', '');
+  // Varsayılan dil: İngilizce
+  Locale _currentLocale = const Locale('en', '');
 
   Locale get currentLocale => _currentLocale;
+
+  /// Desteklenen arayüz dilleri (kod → görünen ad).
+  static const Map<String, String> supported = {
+    'en': 'English',
+    'tr': 'Türkçe',
+    'de': 'Deutsch',
+    'fr': 'Français',
+    'es': 'Español',
+    'it': 'Italiano',
+  };
 
   LanguageViewModel() {
     _loadLanguage();
@@ -13,12 +24,12 @@ class LanguageViewModel extends ChangeNotifier {
   Future<void> _loadLanguage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final languageCode = prefs.getString('language_code') ?? 'tr';
+      final languageCode = prefs.getString('language_code') ?? 'en';
       _currentLocale = Locale(languageCode, '');
       notifyListeners();
     } catch (e) {
-      // Varsayılan dil Türkçe
-      _currentLocale = const Locale('tr', '');
+      // Varsayılan dil İngilizce
+      _currentLocale = const Locale('en', '');
     }
   }
 
@@ -34,14 +45,6 @@ class LanguageViewModel extends ChangeNotifier {
     } catch (e) {
       // Hata durumunda log
       debugPrint('Error saving language: $e');
-    }
-  }
-
-  void toggleLanguage() {
-    if (_currentLocale.languageCode == 'tr') {
-      changeLanguage(const Locale('en', ''));
-    } else {
-      changeLanguage(const Locale('tr', ''));
     }
   }
 }
